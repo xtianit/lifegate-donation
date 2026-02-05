@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Life Gate Ministries Worldwide — Make a Difference</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1a472a;
+      --primary-light: #2d5f3f;
+      --secondary: #d4af37;
+      --accent: #e8b84d;
+      --bg-dark: #0f1419;
+      --bg-light: #f8f6f3;
+      --text-dark: #1a1a1a;
+      --text-light: #ffffff;
+      --success: #10b981;
+      --error: #ef4444;
+      --border: rgba(212, 175, 55, 0.2);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #0f1419 0%, #1a472a 100%);
+      color: var(--text-light);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background particles */
+    .bg-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.15;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      background: var(--secondary);
+      border-radius: 50%;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      25% { transform: translateY(-30px) translateX(20px); }
+      50% { transform: translateY(-60px) translateX(-20px); }
+      75% { transform: translateY(-30px) translateX(30px); }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 15px;
+      letter-spacing: -0.02em;
+    }
+
+    .tagline {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+    }
+
+    /* Main Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+
+    @media (min-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1.2fr 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: fadeInUp 0.8s ease-out backwards;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--secondary), var(--accent));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.6s ease;
+    }
+
+    .card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: var(--secondary);
+      box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      margin-bottom: 25px;
+      color: var(--secondary);
+    }
+
+    /* Stats Display */
+    .stats-grid {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-item {
+      background: rgba(26, 71, 42, 0.5);
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+      background: rgba(26, 71, 42, 0.7);
+      transform: scale(1.02);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .stat-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+    }
+
+    .stat-value .currency {
+      font-size: 1.3rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Progress Bar */
+    .progress-section {
+      margin: 30px 0;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .progress-bar-container {
+      background: rgba(0, 0, 0, 0.3);
+      height: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+      border-radius: 12px;
+      transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.95rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-light);
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--secondary);
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Buttons */
+    .button-group {
+      display: grid;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    button {
+      padding: 18px 30px;
+      border-radius: 12px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    button:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    button span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-stripe {
+      background: linear-gradient(135deg, #635bff 0%, #5245e5 100%);
+      color: white;
+    }
+
+    .btn-stripe:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(99, 91, 255, 0.4);
+    }
+
+    .btn-paystack {
+      background: linear-gradient(135deg, #00d2d3 0%, #00b8b9 100%);
+      color: #0f1419;
+    }
+
+    .btn-paystack:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 210, 211, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Recent Donations */
+    .donations-list {
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    .donations-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .donations-list::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+
+    .donations-list::-webkit-scrollbar-thumb {
+      background: var(--secondary);
+      border-radius: 4px;
+    }
+
+    .donation-item {
+      background: rgba(26, 71, 42, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      animation: slideIn 0.5s ease-out backwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .donation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .donor-name {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .donation-amount {
+      font-weight: 700;
+      color: var(--secondary);
+      font-size: 1.1rem;
+    }
+
+    .donation-meta {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      display: flex;
+      gap: 15px;
+    }
+
+    .provider-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .provider-stripe {
+      background: rgba(99, 91, 255, 0.3);
+      color: #a5a0ff;
+    }
+
+    .provider-paystack {
+      background: rgba(0, 210, 211, 0.3);
+      color: #00d2d3;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      animation: slideDown 0.5s ease-out;
+      display: none;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert.show {
+      display: block;
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    /* Loading */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    .spinner {
+      border: 3px solid rgba(212, 175, 55, 0.2);
+      border-top: 3px solid var(--secondary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+      animation: fadeInUp 1s ease-out 0.5s backwards;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 15px;
+      }
+
+      .card {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* Live indicator */
+    .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.2);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-particles" id="particles"></div>
+
+  <div class="container">
+    <header>
+      <h1>Life Gate Ministries</h1>
+      <p class="tagline">Transforming Lives Through Your Generosity</p>
+    </header>
+
+    <div id="successAlert" class="alert alert-success">
+      <strong>🎉 Thank you!</strong> Your donation has been received successfully.
+    </div>
+
+    <div id="errorAlert" class="alert alert-error">
+      <strong>⚠️ Error:</strong> <span id="errorMessage"></span>
+    </div>
+
+    <div class="main-grid">
+      <!-- Progress Card -->
+      <div class="card">
+        <div class="live-indicator">
+          <div class="live-dot"></div>
+          <span>Live Updates</span>
+        </div>
+        
+        <h2>Campaign Progress</h2>
+        
+        <div class="loading" id="statsLoading">
+          <div class="spinner"></div>
+          <p>Loading campaign data...</p>
+        </div>
+
+        <div id="statsContent">
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-label">Total Raised</div>
+              <div class="stat-value">
+                <span class="currency">₦</span>
+                <span id="totalRaised">0</span>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <div class="stat-label">Amount Remaining</div>
+              <div class="stat-value">
+                <span class="currency">₦</span>
+                <span id="amountLeft">0</span>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <div class="stat-label">Generous Donors</div>
+              <div class="stat-value">
+                <span id="donorCount">0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="progress-section">
+            <div class="progress-header">
+              <span>Campaign Goal</span>
+              <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-header" style="margin-top: 8px;">
+              <span></span>
+              <span id="goalAmount">₦1,000,000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Donations -->
+        <div style="margin-top: 40px;">
+          <h2 style="font-size: 1.5rem; margin-bottom: 20px;">Recent Donations</h2>
+          <div class="loading" id="donationsLoading">
+            <div class="spinner"></div>
+            <p>Loading recent donations...</p>
+          </div>
+          <div class="donations-list" id="donationsList"></div>
+        </div>
+      </div>
+
+      <!-- Donation Form Card -->
+      <div class="card">
+        <h2>Make Your Donation</h2>
+        
+        <form id="donationForm">
+          <div class="form-group">
+            <label for="name">Full Name (Optional)</label>
+            <input 
+              type="text" 
+              id="name" 
+              placeholder="John Doe" 
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input 
+              type="email" 
+              id="email" 
+              placeholder="john@example.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="amount">Donation Amount (₦)</label>
+            <input 
+              type="number" 
+              id="amount" 
+              placeholder="5000" 
+              min="100"
+              required
+            />
+          </div>
+
+          <div class="button-group">
+            <button type="button" class="btn-paystack" onclick="payPaystack()">
+              <span>💳 Pay with Paystack (NGN)</span>
+            </button>
+            <button type="button" class="btn-stripe" onclick="payStripe()">
+              <span>💳 Pay with Stripe (USD)</span>
+            </button>
+          </div>
+        </form>
+
+        <div style="margin-top: 30px; padding: 20px; background: rgba(212, 175, 55, 0.1); border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.3);">
+          <p style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+            <strong>🔒 Secure Donations:</strong> Your payment is processed through secure, encrypted payment gateways. We never store your card information.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Life Gate Ministries Worldwide. All rights reserved.</p>
+    <p style="margin-top: 10px;">Making a difference, one donation at a time.</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA6S7F16xzJAwtk3rbwyEoFetkzQpjGqeQ",
+      authDomain: "coastal-volt-328002.firebaseapp.com",
+      projectId: "coastal-volt-328002",
+      storageBucket: "coastal-volt-328002.firebasestorage.app",
+      messagingSenderId: "938317586234",
+      appId: "1:938317586234:web:bb539825e8fcd7de2f7a03",
+      measurementId: "G-1YKRRKQ9PH"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const campaignDoc = doc(db, "campaigns", "global");
+    // const BACKEND_URL = "http://localhost:3000";
+    const BACKEND_URL = window.location.origin;
+
+    // Create animated particles
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.width = Math.random() * 4 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 20 + 's';
+        particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        container.appendChild(particle);
+      }
+    }
+
+    createParticles();
+
+    // Check for success/cancel in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === '1') {
+      const provider = urlParams.get('provider') || 'payment gateway';
+      document.getElementById('successAlert').classList.add('show');
+      setTimeout(() => {
+        document.getElementById('successAlert').classList.remove('show');
+        window.history.replaceState({}, '', window.location.pathname);
+      }, 5000);
+    }
+    
+    if (urlParams.get('cancel') === '1') {
+      showError('Payment was cancelled. Please try again.');
+      setTimeout(() => {
+        window.history.replaceState({}, '', window.location.pathname);
+      }, 5000);
+    }
+
+    function showError(message) {
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorAlert').classList.add('show');
+      setTimeout(() => {
+        document.getElementById('errorAlert').classList.remove('show');
+      }, 5000);
+    }
+
+    // Real-time campaign stats
+    document.getElementById('statsLoading').classList.add('show');
+    
+    onSnapshot(campaignDoc, (snap) => {
+      document.getElementById('statsLoading').classList.remove('show');
+      
+      if (!snap.exists()) {
+        showError('Campaign data not found. Please contact support.');
+        return;
+      }
+
+      const data = snap.data();
+      const goal = data.goal / 100;
+      const total = data.total / 100;
+      const left = Math.max(goal - total, 0);
+      const pct = goal > 0 ? Math.min(total / goal * 100, 100) : 0;
+
+      // Animate numbers
+      animateValue('totalRaised', 0, total, 1500);
+      animateValue('amountLeft', 0, left, 1500);
+      animateValue('donorCount', 0, data.count || 0, 1500);
+      
+      document.getElementById('progressPercent').textContent = pct.toFixed(1) + '%';
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('goalAmount').textContent = '₦' + goal.toLocaleString();
+    }, (error) => {
+      document.getElementById('statsLoading').classList.remove('show');
+      showError('Failed to load campaign data: ' + error.message);
+    });
+
+    // Real-time donations
+    document.getElementById('donationsLoading').classList.add('show');
+    
+    const donationsQuery = query(
+      collection(campaignDoc, 'donations'),
+      orderBy('createdAt', 'desc'),
+      limit(10)
+    );
+
+    onSnapshot(donationsQuery, (snapshot) => {
+      document.getElementById('donationsLoading').classList.remove('show');
+      const donationsList = document.getElementById('donationsList');
+      
+      if (snapshot.empty) {
+        donationsList.innerHTML = '<p style="color: rgba(255,255,255,0.5); text-align: center; padding: 20px;">No donations yet. Be the first!</p>';
+        return;
+      }
+
+      donationsList.innerHTML = '';
+      snapshot.forEach((doc, index) => {
+        const data = doc.data();
+        const item = document.createElement('div');
+        item.className = 'donation-item';
+        item.style.animationDelay = (index * 0.1) + 's';
+        
+        const createdAt = data.createdAt?.toDate();
+        const timeAgo = createdAt ? getTimeAgo(createdAt) : 'Just now';
+        
+        item.innerHTML = `
+          <div class="donation-header">
+            <span class="donor-name">${data.name || 'Anonymous'}</span>
+            <span class="donation-amount">${data.currency} ${(data.amountMinor / 100).toLocaleString()}</span>
+          </div>
+          <div class="donation-meta">
+            <span class="provider-badge provider-${data.provider}">${data.provider}</span>
+            <span>${timeAgo}</span>
+          </div>
+        `;
+        donationsList.appendChild(item);
+      });
+    }, (error) => {
+      document.getElementById('donationsLoading').classList.remove('show');
+      console.error('Error loading donations:', error);
+    });
+
+    // Helper functions
+    function animateValue(id, start, end, duration) {
+      const element = document.getElementById(id);
+      const range = end - start;
+      const startTime = performance.now();
+      
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const value = start + (range * easeOutQuart(progress));
+        
+        if (id === 'donorCount') {
+          element.textContent = Math.floor(value).toLocaleString();
+        } else {
+          element.textContent = value.toLocaleString(undefined, { 
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0 
+          });
+        }
+        
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      }
+      
+      requestAnimationFrame(update);
+    }
+
+    function easeOutQuart(x) {
+      return 1 - Math.pow(1 - x, 4);
+    }
+
+    function getTimeAgo(date) {
+      const seconds = Math.floor((new Date() - date) / 1000);
+      const intervals = {
+        year: 31536000,
+        month: 2592000,
+        week: 604800,
+        day: 86400,
+        hour: 3600,
+        minute: 60
+      };
+      
+      for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+        const interval = Math.floor(seconds / secondsInUnit);
+        if (interval >= 1) {
+          return interval === 1 ? `1 ${unit} ago` : `${interval} ${unit}s ago`;
+        }
+      }
+      return 'Just now';
+    }
+
+    // Payment functions
+    window.payStripe = async function() {
+      const amount = Number(document.getElementById('amount').value);
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      
+      if (!amount || amount < 100) {
+        showError('Please enter a valid amount (minimum ₦100)');
+        return;
+      }
+
+      if (!email) {
+        showError('Please enter your email address');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/stripe/start`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            amountMajor: amount, 
+            currency: 'USD', 
+            name,
+            email 
+          })
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Payment initiation failed');
+        }
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          showError('Payment URL not received. Please try again.');
+        }
+      } catch (error) {
+        showError(error.message);
+      }
+    };
+
+    window.payPaystack = async function() {
+      const amount = Number(document.getElementById('amount').value);
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      
+      if (!amount || amount < 100) {
+        showError('Please enter a valid amount (minimum ₦100)');
+        return;
+      }
+
+      if (!email) {
+        showError('Email is required for Paystack payments');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/paystack/start`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            amountMajor: amount, 
+            currency: 'NGN', 
+            name, 
+            email 
+          })
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Payment initiation failed');
+        }
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          showError('Payment URL not received. Please try again.');
+        }
+      } catch (error) {
+        console.error('Paystack Error:', error);
+        showError(error.message);
+      }
+    };
+  </script>
+</body>
+</html>
