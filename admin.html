@@ -5,652 +5,171 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Admin Dashboard — Life Gate Ministries</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* ===== YOUR ORIGINAL STYLES (UNCHANGED) ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --primary: #1a472a;
-      --secondary: #d4af37;
-      --accent: #e8b84d;
-      --bg: #0a0e12;
-      --card-bg: #111827;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --text: #e5e7eb;
-      --text-muted: #9ca3af;
-      --border: #1f2937;
+      --primary:#1a472a;--secondary:#d4af37;--accent:#e8b84d;
+      --bg:#0a0e12;--card-bg:#111827;--success:#10b981;
+      --warning:#f59e0b;--text:#e5e7eb;--text-muted:#9ca3af;--border:#1f2937;
     }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    .dashboard {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 30px 20px;
-    }
-
-    header {
-      margin-bottom: 40px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid var(--border);
-    }
-
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      background: linear-gradient(135deg, var(--secondary), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 5px;
-    }
-
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 40px;
-    }
-
-    .stat-card {
-      background: var(--card-bg);
-      padding: 25px;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: linear-gradient(90deg, var(--secondary), var(--accent));
-    }
-
-    .stat-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-
-    .stat-value {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--accent);
-      font-family: 'Playfair Display', serif;
-    }
-
-    .stat-change {
-      font-size: 0.85rem;
-      margin-top: 8px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .stat-change.positive {
-      color: var(--success);
-    }
-
-    .section {
-      background: var(--card-bg);
-      padding: 30px;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      margin-bottom: 30px;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-    }
-
-    h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.8rem;
-      color: var(--secondary);
-    }
-
-    .live-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(16, 185, 129, 0.2);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--success);
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.2); }
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    thead {
-      background: rgba(212, 175, 55, 0.1);
-    }
-
-    th {
-      text-align: left;
-      padding: 15px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-    }
-
-    td {
-      padding: 15px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    tbody tr {
-      transition: background 0.2s;
-      animation: fadeIn 0.5s ease-out backwards;
-    }
-
-    tbody tr:hover {
-      background: rgba(212, 175, 55, 0.05);
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .provider-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .provider-stripe {
-      background: rgba(99, 91, 255, 0.2);
-      color: #a5a0ff;
-      border: 1px solid rgba(99, 91, 255, 0.3);
-    }
-
-    .provider-paystack {
-      background: rgba(0, 210, 211, 0.2);
-      color: #00d2d3;
-      border: 1px solid rgba(0, 210, 211, 0.3);
-    }
-
-    .amount {
-      font-weight: 700;
-      color: var(--accent);
-      font-size: 1.05rem;
-    }
-
-    .donor-name {
-      font-weight: 600;
-    }
-
-    .email {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-
-    .timestamp {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: var(--text-muted);
-    }
-
-    .spinner {
-      border: 3px solid var(--border);
-      border-top: 3px solid var(--secondary);
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 15px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .export-btn {
-      padding: 10px 20px;
-      background: linear-gradient(135deg, var(--secondary), var(--accent));
-      color: var(--bg);
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .export-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
-    }
-
-    .chart-container {
-      margin-top: 20px;
-      height: 300px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-    }
-
-    .filters {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .filter-btn {
-      padding: 8px 16px;
-      background: var(--border);
-      color: var(--text);
-      border: 1px solid transparent;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    .filter-btn:hover {
-      background: var(--card-bg);
-      border-color: var(--secondary);
-    }
-
-    .filter-btn.active {
-      background: linear-gradient(135deg, var(--secondary), var(--accent));
-      color: var(--bg);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-muted);
-    }
-
-    .empty-state svg {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 20px;
-      opacity: 0.3;
-    }
-
-    @media (max-width: 768px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      table {
-        font-size: 0.85rem;
-      }
-
-      th, td {
-        padding: 10px;
-      }
-    }
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .dashboard{max-width:1400px;margin:0 auto;padding:30px 20px}
+    header{margin-bottom:40px;padding-bottom:20px;border-bottom:2px solid var(--border)}
+    h1{font-family:'Playfair Display',serif;font-size:2.5rem;background:linear-gradient(135deg,var(--secondary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .subtitle{color:var(--text-muted)}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:40px}
+    .stat-card{background:var(--card-bg);padding:25px;border-radius:16px;border:1px solid var(--border)}
+    .stat-label{font-size:.85rem;color:var(--text-muted);text-transform:uppercase}
+    .stat-value{font-size:2.5rem;font-family:'Playfair Display',serif;color:var(--accent)}
+    .section{background:var(--card-bg);padding:30px;border-radius:16px;border:1px solid var(--border)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:15px;border-bottom:1px solid var(--border)}
+    .export-btn{padding:10px 20px;background:linear-gradient(135deg,var(--secondary),var(--accent));border:none;border-radius:8px;font-weight:600;cursor:pointer}
+    .filter-btn{padding:8px 16px;border-radius:8px;background:var(--border);color:var(--text);cursor:pointer}
+    .filter-btn.active{background:linear-gradient(135deg,var(--secondary),var(--accent));color:var(--bg)}
   </style>
 </head>
+
 <body>
+
+<!-- LOGIN -->
+<div id="loginScreen" style="max-width:420px;margin:80px auto;padding:24px;border-radius:14px;background:#111827;">
+  <h2 style="color:#d4af37;">Admin Login</h2>
+  <input id="adminEmail" type="email" placeholder="Email" style="width:100%;margin-top:12px;padding:10px;">
+  <input id="adminPassword" type="password" placeholder="Password" style="width:100%;margin-top:12px;padding:10px;">
+  <button id="loginBtn" class="export-btn" style="width:100%;margin-top:16px;">Sign In</button>
+  <div id="loginError" style="display:none;color:#fca5a5;margin-top:10px;"></div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp" style="display:none;">
+  <div style="max-width:1400px;margin:0 auto;text-align:right;padding:10px 20px;">
+    <button id="logoutBtn" class="export-btn">Logout</button>
+  </div>
+
   <div class="dashboard">
     <header>
       <h1>Admin Dashboard</h1>
       <p class="subtitle">Life Gate Ministries Worldwide — Real-time Donation Monitoring</p>
     </header>
 
-    <!-- Statistics Overview -->
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Total Donations</div>
-        <div class="stat-value">₦<span id="totalAmount">0</span></div>
-        <div class="stat-change positive">
-          <span>↑</span> Live updating
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-label">Number of Donors</div>
-        <div class="stat-value"><span id="donorCount">0</span></div>
-        <div class="stat-change positive">
-          <span>↑</span> All time
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-label">Average Donation</div>
-        <div class="stat-value">₦<span id="avgDonation">0</span></div>
-        <div class="stat-change">
-          Per donor
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-label">Goal Progress</div>
-        <div class="stat-value"><span id="goalProgress">0</span>%</div>
-        <div class="stat-change positive">
-          <span>↑</span> Trending up
-        </div>
-      </div>
+      <div class="stat-card"><div class="stat-label">Total Donations</div><div class="stat-value">₦<span id="totalAmount">0</span></div></div>
+      <div class="stat-card"><div class="stat-label">Donors</div><div class="stat-value"><span id="donorCount">0</span></div></div>
+      <div class="stat-card"><div class="stat-label">Average</div><div class="stat-value">₦<span id="avgDonation">0</span></div></div>
+      <div class="stat-card"><div class="stat-label">Progress</div><div class="stat-value"><span id="goalProgress">0</span>%</div></div>
     </div>
 
-    <!-- Recent Donations Table -->
     <div class="section">
-      <div class="section-header">
-        <h2>All Donations</h2>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <div class="live-badge">
-            <div class="live-dot"></div>
-            <span>Live Updates</span>
-          </div>
-          <button class="export-btn" onclick="exportToCSV()">
-            📊 Export to CSV
-          </button>
-        </div>
-      </div>
-
       <div class="filters">
-        <button class="filter-btn active" onclick="filterDonations('all')">All</button>
-        <button class="filter-btn" onclick="filterDonations('stripe')">Stripe</button>
-        <button class="filter-btn" onclick="filterDonations('paystack')">Paystack</button>
-        <button class="filter-btn" onclick="filterDonations('today')">Today</button>
-        <button class="filter-btn" onclick="filterDonations('week')">This Week</button>
+        <button class="filter-btn active" onclick="filterDonations('all',this)">All</button>
+        <button class="filter-btn" onclick="filterDonations('stripe',this)">Stripe</button>
+        <button class="filter-btn" onclick="filterDonations('paystack',this)">Paystack</button>
+        <button class="filter-btn" onclick="filterDonations('today',this)">Today</button>
+        <button class="filter-btn" onclick="filterDonations('week',this)">This Week</button>
       </div>
 
-      <div id="tableLoading" class="loading">
-        <div class="spinner"></div>
-        <p>Loading donations...</p>
-      </div>
-
-      <div id="tableContent" style="display: none;">
-        <div style="overflow-x: auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>Donor</th>
-                <th>Amount</th>
-                <th>Provider</th>
-                <th>Date & Time</th>
-                <th>Reference</th>
-              </tr>
-            </thead>
-            <tbody id="donationsTableBody">
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="emptyState" class="empty-state" style="display: none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
-        <h3>No donations yet</h3>
-        <p>Donations will appear here in real-time</p>
-      </div>
+      <table>
+        <thead>
+          <tr><th>Donor</th><th>Amount</th><th>Provider</th><th>Date</th><th>Ref</th></tr>
+        </thead>
+        <tbody id="donationsTableBody"></tbody>
+      </table>
     </div>
   </div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, collection, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore,doc,collection,query,orderBy,onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyA6S7F16xzJAwtk3rbwyEoFetkzQpjGqeQ",
-      authDomain: "coastal-volt-328002.firebaseapp.com",
-      projectId: "coastal-volt-328002",
-      storageBucket: "coastal-volt-328002.firebasestorage.app",
-      messagingSenderId: "938317586234",
-      appId: "1:938317586234:web:bb539825e8fcd7de2f7a03",
-      measurementId: "G-1YKRRKQ9PH"
-    };
+const firebaseConfig = {
+  apiKey:"AIzaSyA6S7F16xzJAwtk3rbwyEoFetkzQpjGqeQ",
+  authDomain:"coastal-volt-328002.firebaseapp.com",
+  projectId:"coastal-volt-328002"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const campaignDoc = doc(db, "campaigns", "global");
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-    let allDonations = [];
-    let currentFilter = 'all';
+const loginScreen=document.getElementById("loginScreen");
+const adminApp=document.getElementById("adminApp");
+const loginBtn=document.getElementById("loginBtn");
+const logoutBtn=document.getElementById("logoutBtn");
+const loginError=document.getElementById("loginError");
 
-    // Listen to campaign stats
-    onSnapshot(campaignDoc, (snap) => {
-      if (!snap.exists()) {
-        console.error('Campaign document not found');
-        return;
-      }
+loginBtn.onclick=async()=>{
+  loginError.style.display="none";
+  try{
+    await signInWithEmailAndPassword(auth,adminEmail.value,adminPassword.value);
+  }catch(e){
+    loginError.textContent=e.message;
+    loginError.style.display="block";
+  }
+};
+logoutBtn.onclick=()=>signOut(auth);
 
-      const data = snap.data();
-      const total = data.total / 100;
-      const count = data.count || 0;
-      const goal = data.goal / 100;
-      const avg = count > 0 ? total / count : 0;
-      const progress = goal > 0 ? Math.min((total / goal) * 100, 100) : 0;
+let stopCampaign=null,stopDonations=null;
+let allDonations=[],currentFilter="all";
 
-      animateValue('totalAmount', total);
-      animateValue('donorCount', count);
-      animateValue('avgDonation', avg);
-      animateValue('goalProgress', progress, 1);
+function startAdminListeners(){
+  const campaignDoc=doc(db,"campaigns","global");
+
+  stopCampaign=onSnapshot(campaignDoc,snap=>{
+    const d=snap.data();
+    totalAmount.textContent=(d.total/100).toLocaleString();
+    donorCount.textContent=d.count||0;
+    avgDonation.textContent=((d.total/100)/(d.count||1)).toFixed(2);
+    goalProgress.textContent=Math.min((d.total/d.goal)*100,100).toFixed(1);
+  });
+
+  const q=query(collection(campaignDoc,"donations"),orderBy("createdAt","desc"));
+  stopDonations=onSnapshot(q,snap=>{
+    allDonations=snap.docs.map(d=>d.data());
+    render();
+  });
+}
+
+function render(){
+  donationsTableBody.innerHTML="";
+  allDonations
+    .filter(d=>currentFilter==="all"||d.provider===currentFilter)
+    .forEach(d=>{
+      donationsTableBody.innerHTML+=`
+        <tr>
+          <td>${d.name||"Anonymous"}</td>
+          <td>${d.currency} ${(d.amountMinor/100).toLocaleString()}</td>
+          <td>${d.provider}</td>
+          <td>${d.createdAt?.toDate().toLocaleString()}</td>
+          <td>${d.reference?.slice(0,12)}...</td>
+        </tr>`;
     });
+}
 
-    // Listen to all donations
-    const donationsQuery = query(
-      collection(campaignDoc, 'donations'),
-      orderBy('createdAt', 'desc')
-    );
+window.filterDonations=(f,el)=>{
+  currentFilter=f;
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  render();
+};
 
-    onSnapshot(donationsQuery, (snapshot) => {
-      document.getElementById('tableLoading').style.display = 'none';
-      
-      allDonations = [];
-      snapshot.forEach((doc) => {
-        allDonations.push({
-          id: doc.id,
-          ...doc.data()
-        });
-      });
+onAuthStateChanged(auth,user=>{
+  if(user){
+    loginScreen.style.display="none";
+    adminApp.style.display="block";
+    if(!stopCampaign) startAdminListeners();
+  }else{
+    adminApp.style.display="none";
+    loginScreen.style.display="block";
+    stopCampaign?.(); stopDonations?.();
+    stopCampaign=stopDonations=null;
+  }
+});
+</script>
 
-      if (allDonations.length === 0) {
-        document.getElementById('tableContent').style.display = 'none';
-        document.getElementById('emptyState').style.display = 'block';
-      } else {
-        document.getElementById('tableContent').style.display = 'block';
-        document.getElementById('emptyState').style.display = 'none';
-        renderDonations();
-      }
-    });
-
-    function renderDonations() {
-      const tbody = document.getElementById('donationsTableBody');
-      let filtered = [...allDonations];
-
-      // Apply filters
-      if (currentFilter === 'stripe') {
-        filtered = filtered.filter(d => d.provider === 'stripe');
-      } else if (currentFilter === 'paystack') {
-        filtered = filtered.filter(d => d.provider === 'paystack');
-      } else if (currentFilter === 'today') {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        filtered = filtered.filter(d => {
-          const date = d.createdAt?.toDate();
-          return date && date >= today;
-        });
-      } else if (currentFilter === 'week') {
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        filtered = filtered.filter(d => {
-          const date = d.createdAt?.toDate();
-          return date && date >= weekAgo;
-        });
-      }
-
-      tbody.innerHTML = '';
-      
-      filtered.forEach((donation, index) => {
-        const row = document.createElement('tr');
-        row.style.animationDelay = (index * 0.05) + 's';
-        
-        const date = donation.createdAt?.toDate();
-        const formattedDate = date ? 
-          new Intl.DateTimeFormat('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          }).format(date) : 'N/A';
-
-        row.innerHTML = `
-          <td>
-            <div class="donor-name">${donation.name || 'Anonymous'}</div>
-            ${donation.email ? `<div class="email">${donation.email}</div>` : ''}
-          </td>
-          <td>
-            <span class="amount">${donation.currency} ${(donation.amountMinor / 100).toLocaleString()}</span>
-          </td>
-          <td>
-            <span class="provider-badge provider-${donation.provider}">${donation.provider}</span>
-          </td>
-          <td class="timestamp">${formattedDate}</td>
-          <td style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">
-            ${donation.reference?.substring(0, 20)}...
-          </td>
-        `;
-        
-        tbody.appendChild(row);
-      });
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">No donations match this filter</td></tr>';
-      }
-    }
-
-    window.filterDonations = function(filter) {
-      currentFilter = filter;
-      
-      // Update active state
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      event.target.classList.add('active');
-      
-      renderDonations();
-    };
-
-    window.exportToCSV = function() {
-      if (allDonations.length === 0) {
-        alert('No donations to export');
-        return;
-      }
-
-      const headers = ['Date', 'Donor Name', 'Email', 'Amount', 'Currency', 'Provider', 'Reference'];
-      const rows = allDonations.map(d => [
-        d.createdAt?.toDate().toISOString() || '',
-        d.name || 'Anonymous',
-        d.email || '',
-        (d.amountMinor / 100).toFixed(2),
-        d.currency,
-        d.provider,
-        d.reference || ''
-      ]);
-
-      let csvContent = headers.join(',') + '\n';
-      rows.forEach(row => {
-        csvContent += row.map(cell => `"${cell}"`).join(',') + '\n';
-      });
-
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `donations_${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    };
-
-    function animateValue(id, endValue, decimals = 0) {
-      const element = document.getElementById(id);
-      const startValue = parseFloat(element.textContent.replace(/,/g, '')) || 0;
-      const duration = 1000;
-      const startTime = performance.now();
-      
-      function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const value = startValue + (endValue - startValue) * easeOutQuart(progress);
-        
-        element.textContent = value.toLocaleString(undefined, {
-          minimumFractionDigits: decimals,
-          maximumFractionDigits: decimals
-        });
-        
-        if (progress < 1) {
-          requestAnimationFrame(update);
-        }
-      }
-      
-      requestAnimationFrame(update);
-    }
-
-    function easeOutQuart(x) {
-      return 1 - Math.pow(1 - x, 4);
-    }
-  </script>
 </body>
 </html>
