@@ -11,45 +11,415 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ===== YOUR ORIGINAL STYLES (UNCHANGED) ===== */
+    /* ===== ENHANCED STUNNING DESIGN ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     :root {
-      --primary:#1a472a;--secondary:#d4af37;--accent:#e8b84d;
-      --bg:#0a0e12;--card-bg:#111827;--success:#10b981;
-      --warning:#f59e0b;--text:#e5e7eb;--text-muted:#9ca3af;--border:#1f2937;
+      --primary: #1a472a;
+      --secondary: #d4af37;
+      --accent: #e8b84d;
+      --bg: #0a0e12;
+      --card-bg: #111827;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border: #1f2937;
+      --glow: rgba(212, 175, 55, 0.15);
     }
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-    .dashboard{max-width:1400px;margin:0 auto;padding:30px 20px}
-    header{margin-bottom:40px;padding-bottom:20px;border-bottom:2px solid var(--border)}
-    h1{font-family:'Playfair Display',serif;font-size:2.5rem;background:linear-gradient(135deg,var(--secondary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .subtitle{color:var(--text-muted)}
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:40px}
-    .stat-card{background:var(--card-bg);padding:25px;border-radius:16px;border:1px solid var(--border)}
-    .stat-label{font-size:.85rem;color:var(--text-muted);text-transform:uppercase}
-    .stat-value{font-size:2.5rem;font-family:'Playfair Display',serif;color:var(--accent)}
-    .section{background:var(--card-bg);padding:30px;border-radius:16px;border:1px solid var(--border)}
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:15px;border-bottom:1px solid var(--border)}
-    .export-btn{padding:10px 20px;background:linear-gradient(135deg,var(--secondary),var(--accent));border:none;border-radius:8px;font-weight:600;cursor:pointer}
-    .filter-btn{padding:8px 16px;border-radius:8px;background:var(--border);color:var(--text);cursor:pointer}
-    .filter-btn.active{background:linear-gradient(135deg,var(--secondary),var(--accent));color:var(--bg)}
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -1000px 0; }
+      100% { background-position: 1000px 0; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0e12 0%, #1a1f2e 100%);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background particles */
+    body::before {
+      content: '';
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(26, 71, 42, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .dashboard {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      position: relative;
+      z-index: 1;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    header {
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      position: relative;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      position: relative;
+      display: inline-block;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--secondary), transparent);
+      border-radius: 2px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #111827 0%, #1a1f2e 100%);
+      padding: 28px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--secondary);
+      box-shadow: 0 12px 24px rgba(212, 175, 55, 0.15);
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-family: 'Playfair Display', serif;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section {
+      background: linear-gradient(135deg, #111827 0%, #1a1f2e 100%);
+      padding: 32px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--secondary), var(--accent), transparent);
+    }
+
+    .filters {
+      margin-bottom: 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: rgba(212, 175, 55, 0.05);
+      border-radius: 12px;
+    }
+
+    th {
+      padding: 16px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.8px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid rgba(31, 41, 55, 0.5);
+      transition: background 0.2s ease;
+    }
+
+    tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(212, 175, 55, 0.03);
+      transform: scale(1.001);
+    }
+
+    .export-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--bg);
+      font-size: 0.95rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .export-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.5s, height 0.5s;
+    }
+
+    .export-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .export-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+    }
+
+    .export-btn:active {
+      transform: translateY(0);
+    }
+
+    .filter-btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      background: var(--border);
+      color: var(--text);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .filter-btn:hover {
+      background: rgba(212, 175, 55, 0.1);
+      border-color: var(--secondary);
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      color: var(--bg);
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    }
+
+    /* Enhanced Login Screen */
+    .login-container {
+      max-width: 440px;
+      margin: 80px auto;
+      padding: 40px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #111827 0%, #1a1f2e 100%);
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.1), transparent 50%);
+      pointer-events: none;
+    }
+
+    .login-container h2 {
+      color: var(--accent);
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      margin-bottom: 24px;
+      text-align: center;
+      position: relative;
+    }
+
+    .input-field {
+      width: 100%;
+      margin-top: 16px;
+      padding: 14px 16px;
+      background: rgba(31, 41, 55, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--secondary);
+      background: rgba(31, 41, 55, 0.8);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+
+    .input-field::placeholder {
+      color: var(--text-muted);
+    }
+
+    #loginError {
+      display: none;
+      color: #fca5a5;
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(252, 165, 165, 0.1);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      border-left: 3px solid #fca5a5;
+    }
+
+    .logout-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      text-align: right;
+      padding: 16px 20px;
+    }
+
+    /* Loading animation for table */
+    @keyframes skeletonLoading {
+      0% { background-position: -200px 0; }
+      100% { background-position: calc(200px + 100%) 0; }
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+      background-size: 200px 100%;
+      animation: skeletonLoading 1.5s infinite;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      h1 { font-size: 2rem; }
+      .stat-value { font-size: 2rem; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .login-container { margin: 40px 20px; padding: 28px; }
+      table { font-size: 0.85rem; }
+      th, td { padding: 12px 8px; }
+    }
+
+    /* Smooth scroll */
+    html { scroll-behavior: smooth; }
   </style>
 </head>
 
 <body>
 
 <!-- LOGIN -->
-<div id="loginScreen" style="max-width:420px;margin:80px auto;padding:24px;border-radius:14px;background:#111827;">
-  <h2 style="color:#d4af37;">Admin Login</h2>
-  <input id="adminEmail" type="email" placeholder="Email" style="width:100%;margin-top:12px;padding:10px;">
-  <input id="adminPassword" type="password" placeholder="Password" style="width:100%;margin-top:12px;padding:10px;">
-  <button id="loginBtn" class="export-btn" style="width:100%;margin-top:16px;">Sign In</button>
-  <div id="loginError" style="display:none;color:#fca5a5;margin-top:10px;"></div>
+<div id="loginScreen" class="login-container">
+  <h2>Admin Login</h2>
+  <input id="adminEmail" type="email" placeholder="Email" class="input-field">
+  <input id="adminPassword" type="password" placeholder="Password" class="input-field">
+  <button id="loginBtn" class="export-btn" style="width:100%;margin-top:24px;">Sign In</button>
+  <div id="loginError"></div>
 </div>
 
 <!-- ADMIN APP -->
 <div id="adminApp" style="display:none;">
-  <div style="max-width:1400px;margin:0 auto;text-align:right;padding:10px 20px;">
+  <div class="logout-container">
     <button id="logoutBtn" class="export-btn">Logout</button>
   </div>
 
@@ -60,10 +430,22 @@
     </header>
 
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">Total Donations</div><div class="stat-value">₦<span id="totalAmount">0</span></div></div>
-      <div class="stat-card"><div class="stat-label">Donors</div><div class="stat-value"><span id="donorCount">0</span></div></div>
-      <div class="stat-card"><div class="stat-label">Average</div><div class="stat-value">₦<span id="avgDonation">0</span></div></div>
-      <div class="stat-card"><div class="stat-label">Progress</div><div class="stat-value"><span id="goalProgress">0</span>%</div></div>
+      <div class="stat-card">
+        <div class="stat-label">Total Donations</div>
+        <div class="stat-value">₦<span id="totalAmount">0</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Donors</div>
+        <div class="stat-value"><span id="donorCount">0</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Average</div>
+        <div class="stat-value">₦<span id="avgDonation">0</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Progress</div>
+        <div class="stat-value"><span id="goalProgress">0</span>%</div>
+      </div>
     </div>
 
     <div class="section">
@@ -77,7 +459,13 @@
 
       <table>
         <thead>
-          <tr><th>Donor</th><th>Amount</th><th>Provider</th><th>Date</th><th>Ref</th></tr>
+          <tr>
+            <th>Donor</th>
+            <th>Amount</th>
+            <th>Provider</th>
+            <th>Date</th>
+            <th>Ref</th>
+          </tr>
         </thead>
         <tbody id="donationsTableBody"></tbody>
       </table>
@@ -87,90 +475,92 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore,doc,collection,query,orderBy,onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey:"AIzaSyA6S7F16xzJAwtk3rbwyEoFetkzQpjGqeQ",
-  authDomain:"coastal-volt-328002.firebaseapp.com",
-  projectId:"coastal-volt-328002"
+  apiKey: "AIzaSyA6S7F16xzJAwtk3rbwyEoFetkzQpjGqeQ",
+  authDomain: "coastal-volt-328002.firebaseapp.com",
+  projectId: "coastal-volt-328002"
 };
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-const loginScreen=document.getElementById("loginScreen");
-const adminApp=document.getElementById("adminApp");
-const loginBtn=document.getElementById("loginBtn");
-const logoutBtn=document.getElementById("logoutBtn");
-const loginError=document.getElementById("loginError");
+const loginScreen = document.getElementById("loginScreen");
+const adminApp = document.getElementById("adminApp");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const loginError = document.getElementById("loginError");
 
-loginBtn.onclick=async()=>{
-  loginError.style.display="none";
-  try{
-    await signInWithEmailAndPassword(auth,adminEmail.value,adminPassword.value);
-  }catch(e){
-    loginError.textContent=e.message;
-    loginError.style.display="block";
+loginBtn.onclick = async () => {
+  loginError.style.display = "none";
+  try {
+    await signInWithEmailAndPassword(auth, adminEmail.value, adminPassword.value);
+  } catch (e) {
+    loginError.textContent = e.message;
+    loginError.style.display = "block";
   }
 };
-logoutBtn.onclick=()=>signOut(auth);
 
-let stopCampaign=null,stopDonations=null;
-let allDonations=[],currentFilter="all";
+logoutBtn.onclick = () => signOut(auth);
 
-function startAdminListeners(){
-  const campaignDoc=doc(db,"campaigns","global");
+let stopCampaign = null, stopDonations = null;
+let allDonations = [], currentFilter = "all";
 
-  stopCampaign=onSnapshot(campaignDoc,snap=>{
-    const d=snap.data();
-    totalAmount.textContent=(d.total/100).toLocaleString();
-    donorCount.textContent=d.count||0;
-    avgDonation.textContent=((d.total/100)/(d.count||1)).toFixed(2);
-    goalProgress.textContent=Math.min((d.total/d.goal)*100,100).toFixed(1);
+function startAdminListeners() {
+  const campaignDoc = doc(db, "campaigns", "global");
+
+  stopCampaign = onSnapshot(campaignDoc, snap => {
+    const d = snap.data();
+    totalAmount.textContent = (d.total / 100).toLocaleString();
+    donorCount.textContent = d.count || 0;
+    avgDonation.textContent = ((d.total / 100) / (d.count || 1)).toFixed(2);
+    goalProgress.textContent = Math.min((d.total / d.goal) * 100, 100).toFixed(1);
   });
 
-  const q=query(collection(campaignDoc,"donations"),orderBy("createdAt","desc"));
-  stopDonations=onSnapshot(q,snap=>{
-    allDonations=snap.docs.map(d=>d.data());
+  const q = query(collection(campaignDoc, "donations"), orderBy("createdAt", "desc"));
+  stopDonations = onSnapshot(q, snap => {
+    allDonations = snap.docs.map(d => d.data());
     render();
   });
 }
 
-function render(){
-  donationsTableBody.innerHTML="";
+function render() {
+  donationsTableBody.innerHTML = "";
   allDonations
-    .filter(d=>currentFilter==="all"||d.provider===currentFilter)
-    .forEach(d=>{
-      donationsTableBody.innerHTML+=`
+    .filter(d => currentFilter === "all" || d.provider === currentFilter)
+    .forEach(d => {
+      donationsTableBody.innerHTML += `
         <tr>
-          <td>${d.name||"Anonymous"}</td>
-          <td>${d.currency} ${(d.amountMinor/100).toLocaleString()}</td>
+          <td>${d.name || "Anonymous"}</td>
+          <td>${d.currency} ${(d.amountMinor / 100).toLocaleString()}</td>
           <td>${d.provider}</td>
           <td>${d.createdAt?.toDate().toLocaleString()}</td>
-          <td>${d.reference?.slice(0,12)}...</td>
+          <td>${d.reference?.slice(0, 12)}...</td>
         </tr>`;
     });
 }
 
-window.filterDonations=(f,el)=>{
-  currentFilter=f;
-  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+window.filterDonations = (f, el) => {
+  currentFilter = f;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
   el.classList.add("active");
   render();
 };
 
-onAuthStateChanged(auth,user=>{
-  if(user){
-    loginScreen.style.display="none";
-    adminApp.style.display="block";
-    if(!stopCampaign) startAdminListeners();
-  }else{
-    adminApp.style.display="none";
-    loginScreen.style.display="block";
-    stopCampaign?.(); stopDonations?.();
-    stopCampaign=stopDonations=null;
+onAuthStateChanged(auth, user => {
+  if (user) {
+    loginScreen.style.display = "none";
+    adminApp.style.display = "block";
+    if (!stopCampaign) startAdminListeners();
+  } else {
+    adminApp.style.display = "none";
+    loginScreen.style.display = "block";
+    stopCampaign?.();
+    stopDonations?.();
+    stopCampaign = stopDonations = null;
   }
 });
 </script>
