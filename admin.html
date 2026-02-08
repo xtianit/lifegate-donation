@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ===== ENHANCED STUNNING DESIGN ===== */
+    /* ===== ENHANCED STUNNING MOBILE-FIRST DESIGN ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     :root {
@@ -33,14 +33,24 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
     @keyframes shimmer {
       0% { background-position: -1000px 0; }
       100% { background-position: 1000px 0; }
     }
 
     @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.02); }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
     }
 
     body {
@@ -69,14 +79,14 @@
     .dashboard {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 30px 20px;
+      padding: 20px 16px;
       position: relative;
       z-index: 1;
       animation: fadeIn 0.6s ease-out;
     }
 
     header {
-      margin-bottom: 40px;
+      margin-bottom: 32px;
       padding-bottom: 20px;
       border-bottom: 2px solid var(--border);
       position: relative;
@@ -84,7 +94,7 @@
 
     h1 {
       font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
       background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -92,6 +102,7 @@
       margin-bottom: 8px;
       position: relative;
       display: inline-block;
+      animation: slideInRight 0.6s ease-out;
     }
 
     h1::after {
@@ -107,27 +118,34 @@
 
     .subtitle {
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
       letter-spacing: 0.3px;
+      animation: fadeIn 0.8s ease-out;
     }
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 40px;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
     }
 
     .stat-card {
       background: linear-gradient(135deg, #111827 0%, #1a1f2e 100%);
-      padding: 28px;
+      padding: 24px 20px;
       border-radius: 20px;
       border: 1px solid var(--border);
       position: relative;
       overflow: hidden;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.6s ease-out backwards;
     }
+
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; }
 
     .stat-card::before {
       content: '';
@@ -142,7 +160,7 @@
     }
 
     .stat-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-4px) scale(1.02);
       border-color: var(--secondary);
       box-shadow: 0 12px 24px rgba(212, 175, 55, 0.15);
     }
@@ -151,19 +169,23 @@
       opacity: 1;
     }
 
+    .stat-card:active {
+      transform: translateY(-2px) scale(1.01);
+    }
+
     .stat-label {
-      font-size: 0.85rem;
+      font-size: clamp(0.75rem, 2vw, 0.85rem);
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 1.2px;
       font-weight: 600;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       position: relative;
       z-index: 1;
     }
 
     .stat-value {
-      font-size: 2.5rem;
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
       font-family: 'Playfair Display', serif;
       background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
       -webkit-background-clip: text;
@@ -172,16 +194,18 @@
       font-weight: 700;
       position: relative;
       z-index: 1;
+      line-height: 1.2;
     }
 
     .section {
       background: linear-gradient(135deg, #111827 0%, #1a1f2e 100%);
-      padding: 32px;
+      padding: 24px 20px;
       border-radius: 20px;
       border: 1px solid var(--border);
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
       position: relative;
       overflow: hidden;
+      animation: fadeIn 0.8s ease-out;
     }
 
     .section::before {
@@ -195,46 +219,135 @@
     }
 
     .filters {
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       display: flex;
-      gap: 12px;
+      gap: 8px;
       flex-wrap: wrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+
+    .filters::-webkit-scrollbar {
+      display: none;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0 -20px;
+      padding: 0 20px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 600px;
     }
 
     thead {
       background: rgba(212, 175, 55, 0.05);
-      border-radius: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     th {
-      padding: 16px;
+      padding: 14px 12px;
       text-align: left;
       font-weight: 600;
       color: var(--accent);
       text-transform: uppercase;
-      font-size: 0.85rem;
+      font-size: clamp(0.75rem, 2vw, 0.85rem);
       letter-spacing: 0.8px;
       border-bottom: 2px solid var(--border);
+      white-space: nowrap;
     }
 
     td {
-      padding: 16px;
+      padding: 14px 12px;
       border-bottom: 1px solid rgba(31, 41, 55, 0.5);
       transition: background 0.2s ease;
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
     }
 
     tbody tr {
       transition: all 0.2s ease;
+      animation: fadeIn 0.4s ease-out backwards;
     }
 
     tbody tr:hover {
-      background: rgba(212, 175, 55, 0.03);
+      background: rgba(212, 175, 55, 0.05);
       transform: scale(1.001);
+    }
+
+    /* Mobile: Card view for donations */
+    .donation-cards {
+      display: none;
+    }
+
+    .donation-card {
+      background: rgba(31, 41, 55, 0.3);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      animation: fadeIn 0.4s ease-out backwards;
+    }
+
+    .donation-card:hover {
+      background: rgba(212, 175, 55, 0.05);
+      border-color: var(--secondary);
+      transform: translateY(-2px);
+    }
+
+    .donation-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .donation-card-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--accent);
+      flex: 1;
+    }
+
+    .donation-card-amount {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .donation-card-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .donation-card-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .donation-card-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .donation-card-value {
+      font-size: 0.9rem;
+      color: var(--text);
     }
 
     .export-btn {
@@ -245,11 +358,14 @@
       font-weight: 600;
       cursor: pointer;
       color: var(--bg);
-      font-size: 0.95rem;
+      font-size: clamp(0.9rem, 2vw, 0.95rem);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
       position: relative;
       overflow: hidden;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 44px;
     }
 
     .export-btn::before {
@@ -276,11 +392,11 @@
     }
 
     .export-btn:active {
-      transform: translateY(0);
+      transform: translateY(0) scale(0.98);
     }
 
     .filter-btn {
-      padding: 10px 20px;
+      padding: 10px 18px;
       border-radius: 10px;
       background: var(--border);
       color: var(--text);
@@ -288,12 +404,20 @@
       border: 1px solid transparent;
       transition: all 0.3s ease;
       font-weight: 500;
-      font-size: 0.9rem;
+      font-size: clamp(0.85rem, 2vw, 0.9rem);
+      white-space: nowrap;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 44px;
     }
 
     .filter-btn:hover {
       background: rgba(212, 175, 55, 0.1);
       border-color: var(--secondary);
+    }
+
+    .filter-btn:active {
+      transform: scale(0.96);
     }
 
     .filter-btn.active {
@@ -306,8 +430,8 @@
     /* Enhanced Login Screen */
     .login-container {
       max-width: 440px;
-      margin: 80px auto;
-      padding: 40px;
+      margin: 60px auto;
+      padding: 32px 24px;
       border-radius: 24px;
       background: linear-gradient(135deg, #111827 0%, #1a1f2e 100%);
       border: 1px solid var(--border);
@@ -331,7 +455,7 @@
     .login-container h2 {
       color: var(--accent);
       font-family: 'Playfair Display', serif;
-      font-size: 2rem;
+      font-size: clamp(1.75rem, 5vw, 2rem);
       margin-bottom: 24px;
       text-align: center;
       position: relative;
@@ -345,9 +469,10 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       color: var(--text);
-      font-size: 0.95rem;
+      font-size: 1rem;
       transition: all 0.3s ease;
       font-family: 'Inter', sans-serif;
+      min-height: 48px;
     }
 
     .input-field:focus {
@@ -376,10 +501,33 @@
       max-width: 1400px;
       margin: 0 auto;
       text-align: right;
-      padding: 16px 20px;
+      padding: 16px;
     }
 
-    /* Loading animation for table */
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-state-text {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .empty-state-subtext {
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    /* Loading skeleton */
     @keyframes skeletonLoading {
       0% { background-position: -200px 0; }
       100% { background-position: calc(200px + 100%) 0; }
@@ -389,20 +537,87 @@
       background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
       background-size: 200px 100%;
       animation: skeletonLoading 1.5s infinite;
+      border-radius: 8px;
     }
 
     /* Responsive Design */
     @media (max-width: 768px) {
-      h1 { font-size: 2rem; }
-      .stat-value { font-size: 2rem; }
-      .stats-grid { grid-template-columns: 1fr; }
-      .login-container { margin: 40px 20px; padding: 28px; }
-      table { font-size: 0.85rem; }
-      th, td { padding: 12px 8px; }
+      .dashboard {
+        padding: 16px 12px;
+      }
+
+      header {
+        margin-bottom: 24px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .stat-card {
+        padding: 18px 16px;
+      }
+
+      .section {
+        padding: 20px 16px;
+      }
+
+      .table-wrapper {
+        display: none;
+      }
+
+      .donation-cards {
+        display: block;
+      }
+
+      .filters {
+        gap: 6px;
+        margin-bottom: 16px;
+      }
+
+      .filter-btn {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+      }
+
+      .login-container {
+        margin: 40px 16px;
+        padding: 28px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1::after {
+        width: 40px;
+      }
     }
 
     /* Smooth scroll */
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Better touch targets */
+    @media (pointer: coarse) {
+      button, .filter-btn {
+        min-height: 48px;
+      }
+    }
+
+    /* Prevent zoom on input focus for iOS */
+    @media screen and (max-width: 768px) {
+      input[type="email"],
+      input[type="password"],
+      input[type="text"] {
+        font-size: 16px;
+      }
+    }
   </style>
 </head>
 
@@ -411,8 +626,8 @@
 <!-- LOGIN -->
 <div id="loginScreen" class="login-container">
   <h2>Admin Login</h2>
-  <input id="adminEmail" type="email" placeholder="Email" class="input-field">
-  <input id="adminPassword" type="password" placeholder="Password" class="input-field">
+  <input id="adminEmail" type="email" placeholder="Email" class="input-field" autocomplete="email">
+  <input id="adminPassword" type="password" placeholder="Password" class="input-field" autocomplete="current-password">
   <button id="loginBtn" class="export-btn" style="width:100%;margin-top:24px;">Sign In</button>
   <div id="loginError"></div>
 </div>
@@ -457,18 +672,31 @@
         <button class="filter-btn" onclick="filterDonations('week',this)">This Week</button>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Donor</th>
-            <th>Amount</th>
-            <th>Provider</th>
-            <th>Date</th>
-            <th>Ref</th>
-          </tr>
-        </thead>
-        <tbody id="donationsTableBody"></tbody>
-      </table>
+      <!-- Desktop Table View -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Donor</th>
+              <th>Amount</th>
+              <th>Provider</th>
+              <th>Date</th>
+              <th>Ref</th>
+            </tr>
+          </thead>
+          <tbody id="donationsTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="donation-cards" id="donationCards"></div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state" style="display:none;">
+        <div class="empty-state-icon">📊</div>
+        <div class="empty-state-text">No donations yet</div>
+        <div class="empty-state-subtext">Donations will appear here once they are received</div>
+      </div>
     </div>
   </div>
 </div>
@@ -493,14 +721,20 @@ const adminApp = document.getElementById("adminApp");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const loginError = document.getElementById("loginError");
+const emptyState = document.getElementById("emptyState");
 
 loginBtn.onclick = async () => {
   loginError.style.display = "none";
+  loginBtn.textContent = "Signing in...";
+  loginBtn.disabled = true;
+  
   try {
     await signInWithEmailAndPassword(auth, adminEmail.value, adminPassword.value);
   } catch (e) {
     loginError.textContent = e.message;
     loginError.style.display = "block";
+    loginBtn.textContent = "Sign In";
+    loginBtn.disabled = false;
   }
 };
 
@@ -514,10 +748,12 @@ function startAdminListeners() {
 
   stopCampaign = onSnapshot(campaignDoc, snap => {
     const d = snap.data();
-    totalAmount.textContent = (d.total / 100).toLocaleString();
-    donorCount.textContent = d.count || 0;
-    avgDonation.textContent = ((d.total / 100) / (d.count || 1)).toFixed(2);
-    goalProgress.textContent = Math.min((d.total / d.goal) * 100, 100).toFixed(1);
+    if (d) {
+      totalAmount.textContent = (d.total / 100).toLocaleString();
+      donorCount.textContent = d.count || 0;
+      avgDonation.textContent = ((d.total / 100) / (d.count || 1)).toFixed(2);
+      goalProgress.textContent = Math.min((d.total / d.goal) * 100, 100).toFixed(1);
+    }
   });
 
   const q = query(collection(campaignDoc, "donations"), orderBy("createdAt", "desc"));
@@ -527,20 +763,92 @@ function startAdminListeners() {
   });
 }
 
+function filterByTimeRange(donations, range) {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  
+  return donations.filter(d => {
+    if (!d.createdAt) return false;
+    const donationDate = d.createdAt.toDate();
+    
+    if (range === 'today') {
+      return donationDate >= today;
+    } else if (range === 'week') {
+      return donationDate >= weekAgo;
+    }
+    return true;
+  });
+}
+
 function render() {
-  donationsTableBody.innerHTML = "";
-  allDonations
-    .filter(d => currentFilter === "all" || d.provider === currentFilter)
-    .forEach(d => {
-      donationsTableBody.innerHTML += `
-        <tr>
-          <td>${d.name || "Anonymous"}</td>
-          <td>${d.currency} ${(d.amountMinor / 100).toLocaleString()}</td>
-          <td>${d.provider}</td>
-          <td>${d.createdAt?.toDate().toLocaleString()}</td>
-          <td>${d.reference?.slice(0, 12)}...</td>
-        </tr>`;
-    });
+  let filtered = allDonations;
+  
+  // Filter by provider
+  if (currentFilter !== "all" && currentFilter !== "today" && currentFilter !== "week") {
+    filtered = filtered.filter(d => d.provider === currentFilter);
+  }
+  
+  // Filter by time range
+  if (currentFilter === "today" || currentFilter === "week") {
+    filtered = filterByTimeRange(filtered, currentFilter);
+  }
+  
+  // Show/hide empty state
+  if (filtered.length === 0) {
+    emptyState.style.display = "block";
+    document.getElementById("donationsTableBody").innerHTML = "";
+    document.getElementById("donationCards").innerHTML = "";
+    return;
+  } else {
+    emptyState.style.display = "none";
+  }
+  
+  // Render table (desktop)
+  const tableBody = document.getElementById("donationsTableBody");
+  tableBody.innerHTML = "";
+  filtered.forEach((d, index) => {
+    const row = document.createElement("tr");
+    row.style.animationDelay = `${index * 0.05}s`;
+    row.innerHTML = `
+      <td>${d.name || "Anonymous"}</td>
+      <td><strong>${d.currency} ${(d.amountMinor / 100).toLocaleString()}</strong></td>
+      <td>${d.provider}</td>
+      <td>${d.createdAt?.toDate().toLocaleString()}</td>
+      <td><code>${d.reference?.slice(0, 12)}...</code></td>
+    `;
+    tableBody.appendChild(row);
+  });
+  
+  // Render cards (mobile)
+  const cardsContainer = document.getElementById("donationCards");
+  cardsContainer.innerHTML = "";
+  filtered.forEach((d, index) => {
+    const card = document.createElement("div");
+    card.className = "donation-card";
+    card.style.animationDelay = `${index * 0.05}s`;
+    card.innerHTML = `
+      <div class="donation-card-header">
+        <div class="donation-card-name">${d.name || "Anonymous"}</div>
+        <div class="donation-card-amount">${d.currency} ${(d.amountMinor / 100).toLocaleString()}</div>
+      </div>
+      <div class="donation-card-details">
+        <div class="donation-card-detail">
+          <div class="donation-card-label">Provider</div>
+          <div class="donation-card-value">${d.provider}</div>
+        </div>
+        <div class="donation-card-detail">
+          <div class="donation-card-label">Reference</div>
+          <div class="donation-card-value">${d.reference?.slice(0, 12)}...</div>
+        </div>
+        <div class="donation-card-detail" style="grid-column: 1 / -1;">
+          <div class="donation-card-label">Date</div>
+          <div class="donation-card-value">${d.createdAt?.toDate().toLocaleString()}</div>
+        </div>
+      </div>
+    `;
+    cardsContainer.appendChild(card);
+  });
 }
 
 window.filterDonations = (f, el) => {
@@ -554,6 +862,8 @@ onAuthStateChanged(auth, user => {
   if (user) {
     loginScreen.style.display = "none";
     adminApp.style.display = "block";
+    loginBtn.textContent = "Sign In";
+    loginBtn.disabled = false;
     if (!stopCampaign) startAdminListeners();
   } else {
     adminApp.style.display = "none";
