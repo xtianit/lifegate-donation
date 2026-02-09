@@ -3,877 +3,767 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-
   <title>Admin Dashboard — Life Gate Ministries</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ===== ENHANCED STUNNING MOBILE-FIRST DESIGN ===== */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    :root {
-      --primary: #1a472a;
-      --secondary: #d4af37;
-      --accent: #e8b84d;
-      --bg: #0a0e12;
-      --card-bg: #111827;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --text: #e5e7eb;
-      --text-muted: #9ca3af;
-      --border: #1f2937;
-      --glow: rgba(212, 175, 55, 0.15);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes slideInRight {
-      from { opacity: 0; transform: translateX(30px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes shimmer {
-      0% { background-position: -1000px 0; }
-      100% { background-position: 1000px 0; }
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0a0e12 0%, #1a1f2e 100%);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* Animated background particles */
-    body::before {
-      content: '';
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(26, 71, 42, 0.05) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .dashboard {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px 16px;
-      position: relative;
-      z-index: 1;
-      animation: fadeIn 0.6s ease-out;
-    }
-
-    header {
-      margin-bottom: 32px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid var(--border);
-      position: relative;
-    }
-
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.75rem, 5vw, 2.5rem);
-      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 8px;
-      position: relative;
-      display: inline-block;
-      animation: slideInRight 0.6s ease-out;
-    }
-
-    h1::after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 0;
-      width: 60px;
-      height: 3px;
-      background: linear-gradient(90deg, var(--secondary), transparent);
-      border-radius: 2px;
-    }
-
-    .subtitle {
-      color: var(--text-muted);
-      font-size: clamp(0.85rem, 2vw, 0.95rem);
-      letter-spacing: 0.3px;
-      animation: fadeIn 0.8s ease-out;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    .stat-card {
-      background: linear-gradient(135deg, #111827 0%, #1a1f2e 100%);
-      padding: 24px 20px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      animation: fadeIn 0.6s ease-out backwards;
-    }
-
-    .stat-card:nth-child(1) { animation-delay: 0.1s; }
-    .stat-card:nth-child(2) { animation-delay: 0.2s; }
-    .stat-card:nth-child(3) { animation-delay: 0.3s; }
-    .stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-4px) scale(1.02);
-      border-color: var(--secondary);
-      box-shadow: 0 12px 24px rgba(212, 175, 55, 0.15);
-    }
-
-    .stat-card:hover::before {
-      opacity: 1;
-    }
-
-    .stat-card:active {
-      transform: translateY(-2px) scale(1.01);
-    }
-
-    .stat-label {
-      font-size: clamp(0.75rem, 2vw, 0.85rem);
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .stat-value {
-      font-size: clamp(1.75rem, 5vw, 2.5rem);
-      font-family: 'Playfair Display', serif;
-      background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-weight: 700;
-      position: relative;
-      z-index: 1;
-      line-height: 1.2;
-    }
-
-    .section {
-      background: linear-gradient(135deg, #111827 0%, #1a1f2e 100%);
-      padding: 24px 20px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-      position: relative;
-      overflow: hidden;
-      animation: fadeIn 0.8s ease-out;
-    }
-
-    .section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, var(--secondary), var(--accent), transparent);
-    }
-
-    .filters {
-      margin-bottom: 20px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      padding-bottom: 4px;
-    }
-
-    .filters::-webkit-scrollbar {
-      display: none;
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      margin: 0 -20px;
-      padding: 0 20px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 600px;
-    }
-
-    thead {
-      background: rgba(212, 175, 55, 0.05);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    th {
-      padding: 14px 12px;
-      text-align: left;
-      font-weight: 600;
-      color: var(--accent);
-      text-transform: uppercase;
-      font-size: clamp(0.75rem, 2vw, 0.85rem);
-      letter-spacing: 0.8px;
-      border-bottom: 2px solid var(--border);
-      white-space: nowrap;
-    }
-
-    td {
-      padding: 14px 12px;
-      border-bottom: 1px solid rgba(31, 41, 55, 0.5);
-      transition: background 0.2s ease;
-      font-size: clamp(0.85rem, 2vw, 0.95rem);
-    }
-
-    tbody tr {
-      transition: all 0.2s ease;
-      animation: fadeIn 0.4s ease-out backwards;
-    }
-
-    tbody tr:hover {
-      background: rgba(212, 175, 55, 0.05);
-      transform: scale(1.001);
-    }
-
-    /* Mobile: Card view for donations */
-    .donation-cards {
-      display: none;
-    }
-
-    .donation-card {
-      background: rgba(31, 41, 55, 0.3);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-      transition: all 0.3s ease;
-      animation: fadeIn 0.4s ease-out backwards;
-    }
-
-    .donation-card:hover {
-      background: rgba(212, 175, 55, 0.05);
-      border-color: var(--secondary);
-      transform: translateY(-2px);
-    }
-
-    .donation-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      margin-bottom: 12px;
-      gap: 12px;
-    }
-
-    .donation-card-name {
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: var(--accent);
-      flex: 1;
-    }
-
-    .donation-card-amount {
-      font-weight: 700;
-      font-size: 1.2rem;
-      color: var(--text);
-      white-space: nowrap;
-    }
-
-    .donation-card-details {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .donation-card-detail {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .donation-card-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .donation-card-value {
-      font-size: 0.9rem;
-      color: var(--text);
-    }
-
-    .export-btn {
-      padding: 12px 24px;
-      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      color: var(--bg);
-      font-size: clamp(0.9rem, 2vw, 0.95rem);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
-      position: relative;
-      overflow: hidden;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      min-height: 44px;
-    }
-
-    .export-btn::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      transform: translate(-50%, -50%);
-      transition: width 0.5s, height 0.5s;
-    }
-
-    .export-btn:hover::before {
-      width: 300px;
-      height: 300px;
-    }
-
-    .export-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
-    }
-
-    .export-btn:active {
-      transform: translateY(0) scale(0.98);
-    }
-
-    .filter-btn {
-      padding: 10px 18px;
-      border-radius: 10px;
-      background: var(--border);
-      color: var(--text);
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.3s ease;
-      font-weight: 500;
-      font-size: clamp(0.85rem, 2vw, 0.9rem);
-      white-space: nowrap;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      min-height: 44px;
-    }
-
-    .filter-btn:hover {
-      background: rgba(212, 175, 55, 0.1);
-      border-color: var(--secondary);
-    }
-
-    .filter-btn:active {
-      transform: scale(0.96);
-    }
-
-    .filter-btn.active {
-      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
-      color: var(--bg);
-      border-color: var(--accent);
-      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
-    }
-
-    /* Enhanced Login Screen */
-    .login-container {
-      max-width: 440px;
-      margin: 60px auto;
-      padding: 32px 24px;
-      border-radius: 24px;
-      background: linear-gradient(135deg, #111827 0%, #1a1f2e 100%);
-      border: 1px solid var(--border);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-      position: relative;
-      overflow: hidden;
-      animation: fadeIn 0.6s ease-out;
-    }
-
-    .login-container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.1), transparent 50%);
-      pointer-events: none;
-    }
-
-    .login-container h2 {
-      color: var(--accent);
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.75rem, 5vw, 2rem);
-      margin-bottom: 24px;
-      text-align: center;
-      position: relative;
-    }
-
-    .input-field {
-      width: 100%;
-      margin-top: 16px;
-      padding: 14px 16px;
-      background: rgba(31, 41, 55, 0.5);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      font-family: 'Inter', sans-serif;
-      min-height: 48px;
-    }
-
-    .input-field:focus {
-      outline: none;
-      border-color: var(--secondary);
-      background: rgba(31, 41, 55, 0.8);
-      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-    }
-
-    .input-field::placeholder {
-      color: var(--text-muted);
-    }
-
-    #loginError {
-      display: none;
-      color: #fca5a5;
-      margin-top: 12px;
-      padding: 12px;
-      background: rgba(252, 165, 165, 0.1);
-      border-radius: 8px;
-      font-size: 0.9rem;
-      border-left: 3px solid #fca5a5;
-    }
-
-    .logout-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      text-align: right;
-      padding: 16px;
-    }
-
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-muted);
-    }
-
-    .empty-state-icon {
-      font-size: 3rem;
-      margin-bottom: 16px;
-      opacity: 0.5;
-    }
-
-    .empty-state-text {
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-    }
-
-    .empty-state-subtext {
-      font-size: 0.9rem;
-      opacity: 0.7;
-    }
-
-    /* Loading skeleton */
-    @keyframes skeletonLoading {
-      0% { background-position: -200px 0; }
-      100% { background-position: calc(200px + 100%) 0; }
-    }
-
-    .skeleton {
-      background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
-      background-size: 200px 100%;
-      animation: skeletonLoading 1.5s infinite;
-      border-radius: 8px;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .dashboard {
-        padding: 16px 12px;
-      }
-
-      header {
-        margin-bottom: 24px;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        margin-bottom: 24px;
-      }
-
-      .stat-card {
-        padding: 18px 16px;
-      }
-
-      .section {
-        padding: 20px 16px;
-      }
-
-      .table-wrapper {
-        display: none;
-      }
-
-      .donation-cards {
-        display: block;
-      }
-
-      .filters {
-        gap: 6px;
-        margin-bottom: 16px;
-      }
-
-      .filter-btn {
-        padding: 8px 14px;
-        font-size: 0.85rem;
-      }
-
-      .login-container {
-        margin: 40px 16px;
-        padding: 28px 20px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      h1::after {
-        width: 40px;
-      }
-    }
-
-    /* Smooth scroll */
-    html {
-      scroll-behavior: smooth;
-    }
-
-    /* Better touch targets */
-    @media (pointer: coarse) {
-      button, .filter-btn {
-        min-height: 48px;
-      }
-    }
-
-    /* Prevent zoom on input focus for iOS */
-    @media screen and (max-width: 768px) {
-      input[type="email"],
-      input[type="password"],
-      input[type="text"] {
-        font-size: 16px;
-      }
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --primary:#1a472a;
+      --secondary:#d4af37;
+      --accent:#e8b84d;
+      --bg:#0a0e12;
+      --card-bg:#111827;
+      --success:#10b981;
+      --danger:#ef4444;
+      --warning:#f59e0b;
+      --text:#e5e7eb;
+      --text-muted:#9ca3af;
+      --border:#1f2937;
+      --chip:#0f172a;
+    }
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .wrap{max-width:1400px;margin:0 auto;padding:30px 20px}
+    header{margin-bottom:18px;padding-bottom:18px;border-bottom:2px solid var(--border)}
+    h1{font-family:'Playfair Display',serif;font-size:2.5rem;background:linear-gradient(135deg,var(--secondary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:5px}
+    .subtitle{color:var(--text-muted);font-size:.95rem}
+
+    /* login */
+    #loginScreen{
+      max-width:520px;margin:70px auto;padding:24px;border:1px solid var(--border);
+      border-radius:14px;background:var(--card-bg);
+    }
+    #loginScreen h2{font-family:'Playfair Display',serif;color:var(--secondary);margin-bottom:8px}
+    #loginScreen p{color:var(--text-muted);margin-bottom:16px}
+    .field{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .input{
+      padding:12px;border-radius:10px;border:1px solid var(--border);background:#0a0e12;color:var(--text);
+      outline:none
+    }
+    .input:focus{border-color:rgba(212,175,55,.55)}
+    .btn{
+      padding:11px 16px;border:none;border-radius:10px;cursor:pointer;font-weight:700;
+      background:linear-gradient(135deg,var(--secondary),var(--accent));color:#0a0e12;transition:.2s;
+    }
+    .btn:hover{transform:translateY(-1px);box-shadow:0 10px 20px rgba(212,175,55,.2)}
+    .btn.ghost{
+      background:transparent;color:var(--text);border:1px solid var(--border);font-weight:600
+    }
+    .btn.danger{
+      background:rgba(239,68,68,.12);color:#fecaca;border:1px solid rgba(239,68,68,.25)
+    }
+    .btn.small{padding:7px 10px;border-radius:8px;font-size:.85rem}
+    #loginError{
+      display:none;margin-top:12px;color:#fecaca;background:rgba(239,68,68,.12);
+      border:1px solid rgba(239,68,68,.25);padding:10px;border-radius:10px
+    }
+
+    /* topbar */
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:10px 0 14px 0;
+    }
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;background:rgba(16,185,129,.15);
+      padding:6px 14px;border-radius:999px;font-size:.85rem;border:1px solid rgba(16,185,129,.25);
+    }
+    .dot{width:8px;height:8px;background:var(--success);border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.2)}}
+
+    /* stats */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin:22px 0 26px}
+    .stat-card{
+      background:var(--card-bg);padding:25px;border-radius:16px;border:1px solid var(--border);
+      position:relative;overflow:hidden;
+    }
+    .stat-card:before{
+      content:"";position:absolute;top:0;left:0;width:100%;height:3px;
+      background:linear-gradient(90deg,var(--secondary),var(--accent));
+    }
+    .stat-label{font-size:.85rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;font-weight:600}
+    .stat-value{font-size:2.5rem;font-weight:700;color:var(--accent);font-family:'Playfair Display',serif}
+    .stat-sub{font-size:.9rem;color:var(--text-muted);margin-top:6px}
+    .section{
+      background:var(--card-bg);padding:22px;border-radius:16px;border:1px solid var(--border);margin-bottom:30px;
+    }
+    .section-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+    h2{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--secondary)}
+    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .search{
+      display:flex;align-items:center;gap:10px;background:#0a0e12;border:1px solid var(--border);
+      padding:10px 12px;border-radius:12px;min-width:280px;
+    }
+    .search input{flex:1;border:none;background:transparent;color:var(--text);outline:none}
+    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+    .chip{
+      background:var(--chip);border:1px solid var(--border);color:var(--text);
+      padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:600;font-size:.9rem;
+      transition:.2s;
+    }
+    .chip:hover{border-color:rgba(212,175,55,.5)}
+    .chip.active{background:linear-gradient(135deg,var(--secondary),var(--accent));color:#0a0e12;border-color:transparent}
+    .loading{text-align:center;padding:40px;color:var(--text-muted)}
+    .spinner{border:3px solid var(--border);border-top:3px solid var(--secondary);border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto 15px}
+    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+    table{width:100%;border-collapse:collapse}
+    thead{background:rgba(212,175,55,.08)}
+    th{text-align:left;padding:14px;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted)}
+    td{padding:14px;border-bottom:1px solid var(--border);vertical-align:top}
+    tbody tr{transition:background .2s}
+    tbody tr:hover{background:rgba(212,175,55,.05)}
+    .provider-badge{display:inline-block;padding:4px 10px;border-radius:8px;font-size:.75rem;font-weight:800;text-transform:uppercase}
+    .provider-stripe{background:rgba(99,91,255,.18);color:#c7c4ff;border:1px solid rgba(99,91,255,.25)}
+    .provider-paystack{background:rgba(0,210,211,.18);color:#7cf3f3;border:1px solid rgba(0,210,211,.25)}
+    .amount{font-weight:800;color:var(--accent)}
+    .muted{color:var(--text-muted);font-size:.9rem}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:.85rem}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .empty{text-align:center;padding:46px 18px;color:var(--text-muted)}
+
+    /* modal */
+    .modalOverlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;
+      padding:18px;z-index:9999;
+    }
+    .modal{
+      width:min(720px, 100%);background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
+      padding:18px;
+    }
+    .modal h3{font-family:'Playfair Display',serif;color:var(--secondary);font-size:1.5rem;margin-bottom:8px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .grid .full{grid-column:1 / -1}
+    .label{font-size:.85rem;color:var(--text-muted);margin-bottom:6px}
+    .help{font-size:.82rem;color:var(--text-muted);margin-top:6px}
+    .row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+
+    @media (max-width: 780px){
+      .grid{grid-template-columns:1fr}
+      .search{min-width:220px}
+      th:nth-child(5), td:nth-child(5){display:none} /* hide ref on small screens */
     }
   </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen" class="login-container">
-  <h2>Admin Login</h2>
-  <input id="adminEmail" type="email" placeholder="Email" class="input-field" autocomplete="email">
-  <input id="adminPassword" type="password" placeholder="Password" class="input-field" autocomplete="current-password">
-  <button id="loginBtn" class="export-btn" style="width:100%;margin-top:24px;">Sign In</button>
-  <div id="loginError"></div>
-</div>
+  <!-- LOGIN -->
+  <div id="loginScreen">
+    <h2>Admin Login</h2>
+    <p>Sign in to manage donations.</p>
 
-<!-- ADMIN APP -->
-<div id="adminApp" style="display:none;">
-  <div class="logout-container">
-    <button id="logoutBtn" class="export-btn">Logout</button>
-  </div>
-
-  <div class="dashboard">
-    <header>
-      <h1>Admin Dashboard</h1>
-      <p class="subtitle">Life Gate Ministries Worldwide — Real-time Donation Monitoring</p>
-    </header>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Total Donations</div>
-        <div class="stat-value">₦<span id="totalAmount">0</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Donors</div>
-        <div class="stat-value"><span id="donorCount">0</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Average</div>
-        <div class="stat-value">₦<span id="avgDonation">0</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Progress</div>
-        <div class="stat-value"><span id="goalProgress">0</span>%</div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="filters">
-        <button class="filter-btn active" onclick="filterDonations('all',this)">All</button>
-        <button class="filter-btn" onclick="filterDonations('stripe',this)">Stripe</button>
-        <button class="filter-btn" onclick="filterDonations('paystack',this)">Paystack</button>
-        <button class="filter-btn" onclick="filterDonations('today',this)">Today</button>
-        <button class="filter-btn" onclick="filterDonations('week',this)">This Week</button>
-      </div>
-
-      <!-- Desktop Table View -->
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Donor</th>
-              <th>Amount</th>
-              <th>Provider</th>
-              <th>Date</th>
-              <th>Ref</th>
-            </tr>
-          </thead>
-          <tbody id="donationsTableBody"></tbody>
-        </table>
-      </div>
-
-      <!-- Mobile Card View -->
-      <div class="donation-cards" id="donationCards"></div>
-
-      <!-- Empty State -->
-      <div id="emptyState" class="empty-state" style="display:none;">
-        <div class="empty-state-icon">📊</div>
-        <div class="empty-state-text">No donations yet</div>
-        <div class="empty-state-subtext">Donations will appear here once they are received</div>
-      </div>
+    <div class="field">
+      <input id="adminEmail" class="input" type="email" placeholder="Email" autocomplete="username">
+      <input id="adminPassword" class="input" type="password" placeholder="Password" autocomplete="current-password">
+      <button id="loginBtn" class="btn">Sign In</button>
+      <div id="loginError"></div>
     </div>
   </div>
-</div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyA6S7F16xzJAwtk3rbwyEoFetkzQpjGqeQ",
-  authDomain: "coastal-volt-328002.firebaseapp.com",
-  projectId: "coastal-volt-328002"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-const loginScreen = document.getElementById("loginScreen");
-const adminApp = document.getElementById("adminApp");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const loginError = document.getElementById("loginError");
-const emptyState = document.getElementById("emptyState");
-
-loginBtn.onclick = async () => {
-  loginError.style.display = "none";
-  loginBtn.textContent = "Signing in...";
-  loginBtn.disabled = true;
-  
-  try {
-    await signInWithEmailAndPassword(auth, adminEmail.value, adminPassword.value);
-  } catch (e) {
-    loginError.textContent = e.message;
-    loginError.style.display = "block";
-    loginBtn.textContent = "Sign In";
-    loginBtn.disabled = false;
-  }
-};
-
-logoutBtn.onclick = () => signOut(auth);
-
-let stopCampaign = null, stopDonations = null;
-let allDonations = [], currentFilter = "all";
-
-function startAdminListeners() {
-  const campaignDoc = doc(db, "campaigns", "global");
-
-  stopCampaign = onSnapshot(campaignDoc, snap => {
-    const d = snap.data();
-    if (d) {
-      totalAmount.textContent = (d.total / 100).toLocaleString();
-      donorCount.textContent = d.count || 0;
-      avgDonation.textContent = ((d.total / 100) / (d.count || 1)).toFixed(2);
-      goalProgress.textContent = Math.min((d.total / d.goal) * 100, 100).toFixed(1);
-    }
-  });
-
-  const q = query(collection(campaignDoc, "donations"), orderBy("createdAt", "desc"));
-  stopDonations = onSnapshot(q, snap => {
-    allDonations = snap.docs.map(d => d.data());
-    render();
-  });
-}
-
-function filterByTimeRange(donations, range) {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  
-  return donations.filter(d => {
-    if (!d.createdAt) return false;
-    const donationDate = d.createdAt.toDate();
-    
-    if (range === 'today') {
-      return donationDate >= today;
-    } else if (range === 'week') {
-      return donationDate >= weekAgo;
-    }
-    return true;
-  });
-}
-
-function render() {
-  let filtered = allDonations;
-  
-  // Filter by provider
-  if (currentFilter !== "all" && currentFilter !== "today" && currentFilter !== "week") {
-    filtered = filtered.filter(d => d.provider === currentFilter);
-  }
-  
-  // Filter by time range
-  if (currentFilter === "today" || currentFilter === "week") {
-    filtered = filterByTimeRange(filtered, currentFilter);
-  }
-  
-  // Show/hide empty state
-  if (filtered.length === 0) {
-    emptyState.style.display = "block";
-    document.getElementById("donationsTableBody").innerHTML = "";
-    document.getElementById("donationCards").innerHTML = "";
-    return;
-  } else {
-    emptyState.style.display = "none";
-  }
-  
-  // Render table (desktop)
-  const tableBody = document.getElementById("donationsTableBody");
-  tableBody.innerHTML = "";
-  filtered.forEach((d, index) => {
-    const row = document.createElement("tr");
-    row.style.animationDelay = `${index * 0.05}s`;
-    row.innerHTML = `
-      <td>${d.name || "Anonymous"}</td>
-      <td><strong>${d.currency} ${(d.amountMinor / 100).toLocaleString()}</strong></td>
-      <td>${d.provider}</td>
-      <td>${d.createdAt?.toDate().toLocaleString()}</td>
-      <td><code>${d.reference?.slice(0, 12)}...</code></td>
-    `;
-    tableBody.appendChild(row);
-  });
-  
-  // Render cards (mobile)
-  const cardsContainer = document.getElementById("donationCards");
-  cardsContainer.innerHTML = "";
-  filtered.forEach((d, index) => {
-    const card = document.createElement("div");
-    card.className = "donation-card";
-    card.style.animationDelay = `${index * 0.05}s`;
-    card.innerHTML = `
-      <div class="donation-card-header">
-        <div class="donation-card-name">${d.name || "Anonymous"}</div>
-        <div class="donation-card-amount">${d.currency} ${(d.amountMinor / 100).toLocaleString()}</div>
+  <!-- APP -->
+  <div id="adminApp" style="display:none;">
+    <div class="wrap">
+      <div class="topbar">
+        <div class="badge"><span class="dot"></span> Live Updates</div>
+        <button id="logoutBtn" class="btn">Logout</button>
       </div>
-      <div class="donation-card-details">
-        <div class="donation-card-detail">
-          <div class="donation-card-label">Provider</div>
-          <div class="donation-card-value">${d.provider}</div>
+
+      <header>
+        <h1>Admin Dashboard</h1>
+        <p class="subtitle">Life Gate Ministries Worldwide — Donation Management</p>
+      </header>
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Donations</div>
+          <div class="stat-value">₦<span id="totalAmount">0</span></div>
+          <div class="stat-sub">Live updating</div>
         </div>
-        <div class="donation-card-detail">
-          <div class="donation-card-label">Reference</div>
-          <div class="donation-card-value">${d.reference?.slice(0, 12)}...</div>
+
+        <div class="stat-card">
+          <div class="stat-label">Number of Donors</div>
+          <div class="stat-value"><span id="donorCount">0</span></div>
+          <div class="stat-sub">All time</div>
         </div>
-        <div class="donation-card-detail" style="grid-column: 1 / -1;">
-          <div class="donation-card-label">Date</div>
-          <div class="donation-card-value">${d.createdAt?.toDate().toLocaleString()}</div>
+
+        <div class="stat-card">
+          <div class="stat-label">Average Donation</div>
+          <div class="stat-value">₦<span id="avgDonation">0</span></div>
+          <div class="stat-sub">Per donor</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Goal Progress</div>
+          <div class="stat-value"><span id="goalProgress">0</span>%</div>
+          <div class="stat-sub">Towards target</div>
         </div>
       </div>
-    `;
-    cardsContainer.appendChild(card);
-  });
-}
 
-window.filterDonations = (f, el) => {
-  currentFilter = f;
-  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-  el.classList.add("active");
-  render();
-};
+      <!-- TABLE -->
+      <div class="section">
+        <div class="section-header">
+          <h2>All Donations</h2>
 
-onAuthStateChanged(auth, user => {
-  if (user) {
-    loginScreen.style.display = "none";
-    adminApp.style.display = "block";
-    loginBtn.textContent = "Sign In";
-    loginBtn.disabled = false;
-    if (!stopCampaign) startAdminListeners();
-  } else {
-    adminApp.style.display = "none";
-    loginScreen.style.display = "block";
-    stopCampaign?.();
-    stopDonations?.();
-    stopCampaign = stopDonations = null;
-  }
-});
-</script>
+          <div class="toolbar">
+            <div class="search">
+              🔎 <input id="searchInput" type="text" placeholder="Search name, email, reference...">
+            </div>
+            <button id="exportBtn" class="btn">📊 Export Current View</button>
+          </div>
+        </div>
 
+        <div class="chips">
+          <button class="chip active" onclick="filterDonations('all', this)">All</button>
+          <button class="chip" onclick="filterDonations('stripe', this)">Stripe</button>
+          <button class="chip" onclick="filterDonations('paystack', this)">Paystack</button>
+          <button class="chip" onclick="filterDonations('today', this)">Today</button>
+          <button class="chip" onclick="filterDonations('week', this)">This Week</button>
+        </div>
+
+        <div id="tableLoading" class="loading">
+          <div class="spinner"></div>
+          <p>Loading donations...</p>
+        </div>
+
+        <div id="tableContent" style="display:none; overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Donor</th>
+                <th>Amount</th>
+                <th>Provider</th>
+                <th>Date</th>
+                <th>Ref</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="donationsTableBody"></tbody>
+          </table>
+        </div>
+
+        <div id="emptyState" class="empty" style="display:none;">
+          No donations match your filter/search.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT MODAL -->
+  <div id="modalOverlay" class="modalOverlay">
+    <div class="modal">
+      <h3>Edit Donation</h3>
+      <p class="muted">Edits will update Firestore. If you change the amount, campaign totals will be adjusted correctly.</p>
+
+      <div class="grid">
+        <div>
+          <div class="label">Donor Name</div>
+          <input id="editName" class="input" type="text" placeholder="Name">
+        </div>
+        <div>
+          <div class="label">Email</div>
+          <input id="editEmail" class="input" type="email" placeholder="Email (optional)">
+        </div>
+        <div>
+          <div class="label">Amount (Major)</div>
+          <input id="editAmountMajor" class="input" type="number" step="0.01" min="0" placeholder="e.g. 5000">
+          <div class="help">This is the human amount (e.g. ₦5000). Internally stored in minor units.</div>
+        </div>
+        <div>
+          <div class="label">Currency</div>
+          <input id="editCurrency" class="input" type="text" placeholder="NGN" maxlength="5">
+          <div class="help">Example: NGN, USD</div>
+        </div>
+        <div class="full">
+          <div class="label">Reference (read-only)</div>
+          <input id="editReference" class="input" type="text" readonly>
+        </div>
+      </div>
+
+      <div id="modalError" style="display:none;margin-top:12px;color:#fecaca;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);padding:10px;border-radius:10px;"></div>
+
+      <div class="row">
+        <button class="btn ghost" id="cancelModalBtn">Cancel</button>
+        <button class="btn danger" id="deleteDonationBtn">Delete Donation</button>
+        <button class="btn" id="saveDonationBtn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signInWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    import {
+      getFirestore,
+      doc,
+      collection,
+      query,
+      orderBy,
+      onSnapshot,
+      runTransaction,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ✅ Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyA6S7F16xzJAwtk3rbwyEoFetkzQpjGqeQ",
+      authDomain: "coastal-volt-328002.firebaseapp.com",
+      projectId: "coastal-volt-328002",
+      storageBucket: "coastal-volt-328002.firebasestorage.app",
+      messagingSenderId: "938317586234",
+      appId: "1:938317586234:web:bb539825e8fcd7de2f7a03",
+      measurementId: "G-1YKRRKQ9PH"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // UI refs
+    const loginScreen = document.getElementById("loginScreen");
+    const adminApp = document.getElementById("adminApp");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const loginError = document.getElementById("loginError");
+
+    const tableLoading = document.getElementById("tableLoading");
+    const tableContent = document.getElementById("tableContent");
+    const emptyState = document.getElementById("emptyState");
+    const tbody = document.getElementById("donationsTableBody");
+    const searchInput = document.getElementById("searchInput");
+    const exportBtn = document.getElementById("exportBtn");
+
+    // Modal refs
+    const modalOverlay = document.getElementById("modalOverlay");
+    const cancelModalBtn = document.getElementById("cancelModalBtn");
+    const saveDonationBtn = document.getElementById("saveDonationBtn");
+    const deleteDonationBtn = document.getElementById("deleteDonationBtn");
+    const modalError = document.getElementById("modalError");
+
+    const editName = document.getElementById("editName");
+    const editEmail = document.getElementById("editEmail");
+    const editAmountMajor = document.getElementById("editAmountMajor");
+    const editCurrency = document.getElementById("editCurrency");
+    const editReference = document.getElementById("editReference");
+
+    // Firestore refs
+    const campaignDocRef = doc(db, "campaigns", "global");
+    const donationsColRef = collection(campaignDocRef, "donations");
+
+    // state
+    let unsubCampaign = null;
+    let unsubDonations = null;
+
+    let allDonations = [];
+    let currentFilter = "all";
+    let currentSearch = "";
+
+    // currently edited donation
+    let editing = null; // { id, ...data }
+
+    function showLoginError(msg){
+      loginError.textContent = msg;
+      loginError.style.display = "block";
+    }
+
+    loginBtn.addEventListener("click", async () => {
+      loginError.style.display = "none";
+      const email = document.getElementById("adminEmail").value.trim();
+      const password = document.getElementById("adminPassword").value;
+
+      try{
+        await signInWithEmailAndPassword(auth, email, password);
+      }catch(e){
+        showLoginError(e?.message || "Login failed");
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+    });
+
+    // Auth state
+    onAuthStateChanged(auth, (user) => {
+      if(user){
+        loginScreen.style.display = "none";
+        adminApp.style.display = "block";
+        startAdminListeners();
+      }else{
+        adminApp.style.display = "none";
+        loginScreen.style.display = "block";
+        stopAdminListeners();
+      }
+    });
+
+    function stopAdminListeners(){
+      if(unsubCampaign){ unsubCampaign(); unsubCampaign = null; }
+      if(unsubDonations){ unsubDonations(); unsubDonations = null; }
+      allDonations = [];
+      tbody.innerHTML = "";
+      tableLoading.style.display = "block";
+      tableContent.style.display = "none";
+      emptyState.style.display = "none";
+    }
+
+    function startAdminListeners(){
+      stopAdminListeners(); // ensure clean start
+
+      // campaign stats
+      unsubCampaign = onSnapshot(campaignDocRef, (snap) => {
+        if(!snap.exists()) return;
+        const data = snap.data();
+
+        const total = (data.total || 0) / 100;
+        const count = data.count || 0;
+        const goal = (data.goal || 0) / 100;
+        const avg = count > 0 ? total / count : 0;
+        const progress = goal > 0 ? Math.min((total / goal) * 100, 100) : 0;
+
+        animateValue("totalAmount", total);
+        animateValue("donorCount", count);
+        animateValue("avgDonation", avg);
+        animateValue("goalProgress", progress, 1);
+      });
+
+      // donations list
+      const q = query(donationsColRef, orderBy("createdAt", "desc"));
+      unsubDonations = onSnapshot(q, (snapshot) => {
+        tableLoading.style.display = "none";
+
+        allDonations = [];
+        snapshot.forEach((d) => allDonations.push({ id: d.id, ...d.data() }));
+
+        render();
+      }, (err) => {
+        tableLoading.style.display = "none";
+        emptyState.style.display = "block";
+        emptyState.textContent = "Failed to load donations. Check Firestore rules & login.";
+        console.error(err);
+      });
+    }
+
+    // Search
+    searchInput.addEventListener("input", () => {
+      currentSearch = (searchInput.value || "").trim().toLowerCase();
+      render();
+    });
+
+    // Export
+    exportBtn.addEventListener("click", () => exportCurrentView());
+
+    // Filter function used by onclick
+    window.filterDonations = function(filter, el){
+      currentFilter = filter;
+
+      document.querySelectorAll(".chip").forEach(btn => btn.classList.remove("active"));
+      if(el) el.classList.add("active");
+
+      render();
+    };
+
+    function applyFilter(list){
+      let filtered = [...list];
+
+      // Provider filters
+      if(currentFilter === "stripe"){
+        filtered = filtered.filter(d => d.provider === "stripe");
+      }else if(currentFilter === "paystack"){
+        filtered = filtered.filter(d => d.provider === "paystack");
+      }else if(currentFilter === "today"){
+        const today = new Date(); today.setHours(0,0,0,0);
+        filtered = filtered.filter(d => {
+          const dt = d.createdAt?.toDate?.();
+          return dt && dt >= today;
+        });
+      }else if(currentFilter === "week"){
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        filtered = filtered.filter(d => {
+          const dt = d.createdAt?.toDate?.();
+          return dt && dt >= weekAgo;
+        });
+      }
+
+      // Search
+      if(currentSearch){
+        filtered = filtered.filter(d => {
+          const name = (d.name || "").toLowerCase();
+          const email = (d.email || "").toLowerCase();
+          const ref = (d.reference || "").toLowerCase();
+          return name.includes(currentSearch) || email.includes(currentSearch) || ref.includes(currentSearch);
+        });
+      }
+
+      return filtered;
+    }
+
+    function render(){
+      const view = applyFilter(allDonations);
+
+      if(allDonations.length === 0){
+        tableContent.style.display = "none";
+        emptyState.style.display = "block";
+        emptyState.textContent = "No donations yet.";
+        return;
+      }
+
+      if(view.length === 0){
+        tableContent.style.display = "none";
+        emptyState.style.display = "block";
+        emptyState.textContent = "No donations match your filter/search.";
+        return;
+      }
+
+      emptyState.style.display = "none";
+      tableContent.style.display = "block";
+
+      tbody.innerHTML = "";
+      view.forEach((donation) => {
+        const tr = document.createElement("tr");
+
+        const dt = donation.createdAt?.toDate?.();
+        const formatted = dt
+          ? new Intl.DateTimeFormat("en-GB", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit" }).format(dt)
+          : "N/A";
+
+        const amountMajor = (Number(donation.amountMinor || 0) / 100);
+        const currency = (donation.currency || "").toUpperCase();
+
+        tr.innerHTML = `
+          <td>
+            <div style="font-weight:700">${escapeHtml(donation.name || "Anonymous")}</div>
+            ${donation.email ? `<div class="muted">${escapeHtml(donation.email)}</div>` : `<div class="muted">—</div>`}
+          </td>
+          <td><span class="amount">${currency} ${amountMajor.toLocaleString()}</span></td>
+          <td>
+            <span class="provider-badge provider-${donation.provider}">
+              ${escapeHtml(donation.provider || "unknown")}
+            </span>
+          </td>
+          <td class="muted">${formatted}</td>
+          <td class="mono">${escapeHtml((donation.reference || "").slice(0, 18))}${(donation.reference || "").length > 18 ? "…" : ""}</td>
+          <td>
+            <div class="actions">
+              <button class="btn small ghost" data-action="edit">✏ Edit</button>
+              <button class="btn small danger" data-action="delete">🗑 Delete</button>
+            </div>
+          </td>
+        `;
+
+        tr.querySelector('[data-action="edit"]').addEventListener("click", () => openEditModal(donation));
+        tr.querySelector('[data-action="delete"]').addEventListener("click", () => quickDelete(donation));
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function escapeHtml(str){
+      return String(str || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function exportCurrentView(){
+      const view = applyFilter(allDonations);
+      if(view.length === 0){
+        alert("No rows to export.");
+        return;
+      }
+
+      const headers = ["DateISO","DonorName","Email","AmountMajor","Currency","Provider","Reference","DocId"];
+      const rows = view.map(d => {
+        const dt = d.createdAt?.toDate?.();
+        return [
+          dt ? dt.toISOString() : "",
+          d.name || "Anonymous",
+          d.email || "",
+          ((Number(d.amountMinor || 0) / 100).toFixed(2)),
+          (d.currency || "").toUpperCase(),
+          d.provider || "",
+          d.reference || "",
+          d.id || ""
+        ];
+      });
+
+      let csv = headers.join(",") + "\n";
+      for(const r of rows){
+        csv += r.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(",") + "\n";
+      }
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `donations_export_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ===== Modal (edit/delete) =====
+    function openEditModal(donation){
+      editing = donation;
+      modalError.style.display = "none";
+
+      editName.value = donation.name || "";
+      editEmail.value = donation.email || "";
+      editAmountMajor.value = (Number(donation.amountMinor || 0) / 100).toFixed(2);
+      editCurrency.value = (donation.currency || "").toUpperCase();
+      editReference.value = donation.reference || "";
+
+      modalOverlay.style.display = "flex";
+    }
+
+    function closeModal(){
+      editing = null;
+      modalOverlay.style.display = "none";
+    }
+
+    cancelModalBtn.addEventListener("click", closeModal);
+    modalOverlay.addEventListener("click", (e) => {
+      if(e.target === modalOverlay) closeModal();
+    });
+
+    saveDonationBtn.addEventListener("click", async () => {
+      if(!editing) return;
+
+      modalError.style.display = "none";
+
+      const name = editName.value.trim() || "Anonymous";
+      const email = editEmail.value.trim() || null;
+
+      const currency = (editCurrency.value.trim() || editing.currency || "NGN").toUpperCase();
+      const amountMajorNum = Number(editAmountMajor.value);
+
+      if(!Number.isFinite(amountMajorNum) || amountMajorNum <= 0){
+        return showModalError("Amount must be a valid number greater than 0.");
+      }
+
+      const newAmountMinor = Math.round(amountMajorNum * 100);
+      const oldAmountMinor = Number(editing.amountMinor || 0);
+      const delta = newAmountMinor - oldAmountMinor;
+
+      const donationRef = doc(db, "campaigns", "global", "donations", editing.id);
+
+      try{
+        await runTransaction(db, async (tx) => {
+          const campSnap = await tx.get(campaignDocRef);
+          const donSnap = await tx.get(donationRef);
+
+          if(!campSnap.exists()) throw new Error("Campaign doc not found.");
+          if(!donSnap.exists()) throw new Error("Donation doc not found.");
+
+          const camp = campSnap.data();
+          const total = Number(camp.total || 0);
+          const count = Number(camp.count || 0);
+
+          // update donation
+          tx.update(donationRef, {
+            name,
+            email,
+            currency,
+            amountMinor: newAmountMinor,
+            updatedAt: serverTimestamp()
+          });
+
+          // adjust campaign total if amount changed
+          if(delta !== 0){
+            tx.update(campaignDocRef, {
+              total: total + delta,
+              // count stays the same when editing
+              count: count,
+              updatedAt: serverTimestamp()
+            });
+          }else{
+            tx.update(campaignDocRef, { updatedAt: serverTimestamp() });
+          }
+        });
+
+        closeModal();
+      }catch(err){
+        console.error(err);
+        showModalError(err?.message || "Failed to save donation. Check rules / permissions.");
+      }
+    });
+
+    deleteDonationBtn.addEventListener("click", async () => {
+      if(!editing) return;
+
+      const ok = confirm("Delete this donation permanently? This will also adjust total/count.");
+      if(!ok) return;
+
+      const donationRef = doc(db, "campaigns", "global", "donations", editing.id);
+
+      try{
+        await runTransaction(db, async (tx) => {
+          const campSnap = await tx.get(campaignDocRef);
+          const donSnap = await tx.get(donationRef);
+
+          if(!campSnap.exists()) throw new Error("Campaign doc not found.");
+          if(!donSnap.exists()) throw new Error("Donation doc not found.");
+
+          const camp = campSnap.data();
+          const donation = donSnap.data();
+
+          const total = Number(camp.total || 0);
+          const count = Number(camp.count || 0);
+
+          const amountMinor = Number(donation.amountMinor || 0);
+
+          tx.delete(donationRef);
+
+          tx.update(campaignDocRef, {
+            total: Math.max(total - amountMinor, 0),
+            count: Math.max(count - 1, 0),
+            updatedAt: serverTimestamp()
+          });
+        });
+
+        closeModal();
+      }catch(err){
+        console.error(err);
+        showModalError(err?.message || "Failed to delete donation. Check rules / permissions.");
+      }
+    });
+
+    async function quickDelete(donation){
+      const ok = confirm(`Delete donation from "${donation.name || "Anonymous"}"?`);
+      if(!ok) return;
+
+      // reuse modal delete logic safely
+      openEditModal(donation);
+      deleteDonationBtn.click();
+    }
+
+    function showModalError(msg){
+      modalError.textContent = msg;
+      modalError.style.display = "block";
+    }
+
+    // ===== Animations =====
+    function animateValue(id, endValue, decimals = 0) {
+      const el = document.getElementById(id);
+      const startValue = parseFloat(String(el.textContent).replace(/,/g, "")) || 0;
+      const duration = 800;
+      const start = performance.now();
+
+      function easeOutQuart(x){ return 1 - Math.pow(1 - x, 4); }
+
+      function step(now){
+        const t = Math.min((now - start) / duration, 1);
+        const val = startValue + (endValue - startValue) * easeOutQuart(t);
+        el.textContent = val.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        if(t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+  </script>
 </body>
 </html>
