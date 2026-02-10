@@ -324,12 +324,30 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
+    
+
     // UI refs
     const loginScreen = document.getElementById("loginScreen");
     const adminApp = document.getElementById("adminApp");
     const loginBtn = document.getElementById("loginBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const loginError = document.getElementById("loginError");
+
+    
+    let currentAdminUID = null;
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentAdminUID = user.uid;
+        loginScreen.style.display = "none";
+        adminApp.style.display = "block";
+        startAdminListeners();
+      } else {
+        currentAdminUID = null;
+        loginScreen.style.display = "block";
+        adminApp.style.display = "none";
+      }
+    });
+
 
     const tableLoading = document.getElementById("tableLoading");
     const tableContent = document.getElementById("tableContent");
@@ -388,17 +406,17 @@
     });
 
     // Auth state
-    onAuthStateChanged(auth, (user) => {
-      if(user){
-        loginScreen.style.display = "none";
-        adminApp.style.display = "block";
-        startAdminListeners();
-      }else{
-        adminApp.style.display = "none";
-        loginScreen.style.display = "block";
-        stopAdminListeners();
-      }
-    });
+    // onAuthStateChanged(auth, (user) => {
+    //   if(user){
+    //     loginScreen.style.display = "none";
+    //     adminApp.style.display = "block";
+    //     startAdminListeners();
+    //   }else{
+    //     adminApp.style.display = "none";
+    //     loginScreen.style.display = "block";
+    //     stopAdminListeners();
+    //   }
+    // });
 
     function stopAdminListeners(){
       if(unsubCampaign){ unsubCampaign(); unsubCampaign = null; }
