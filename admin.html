@@ -298,16 +298,18 @@
       signOut
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    import {
-      getFirestore,
-      doc,
-      collection,
-      query,
-      orderBy,
-      onSnapshot,
-      runTransaction,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+   import {
+    getFirestore,
+    doc,
+    getDoc,
+    collection,
+    query,
+    orderBy,
+    onSnapshot,
+    runTransaction,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 
     // ✅ Your Firebase config
     const firebaseConfig = {
@@ -335,18 +337,31 @@
 
     
     let currentAdminUID = null;
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentAdminUID = user.uid;
-        loginScreen.style.display = "none";
-        adminApp.style.display = "block";
-        startAdminListeners();
-      } else {
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
         currentAdminUID = null;
         loginScreen.style.display = "block";
         adminApp.style.display = "none";
+        stopAdminListeners();
+        return;
       }
+    
+      // ✅ verify admin before enabling the app
+      const ok = await assertAdmin(user.uid);
+    
+      if (!ok) {
+        // Not an admin — block access
+        await signOut(auth);
+        showLoginError("Access denied. This account is not an admin.");
+        return;
+      }
+    
+      currentAdminUID = user.uid;
+      loginScreen.style.display = "none";
+      adminApp.style.display = "block";
+      startAdminListeners();
     });
+
 
 
     const tableLoading = document.getElementById("tableLoading");
