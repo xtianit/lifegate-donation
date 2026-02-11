@@ -297,6 +297,7 @@
       signInWithEmailAndPassword,
       signOut
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    
 
    import {
     getFirestore,
@@ -335,8 +336,19 @@
     const logoutBtn = document.getElementById("logoutBtn");
     const loginError = document.getElementById("loginError");
 
+
+
+
+    async function assertAdmin(uid) {
+      // checks: campaigns/global/admins/{uid} must exist
+      const adminRef = doc(db, "campaigns", "global", "admins", uid);
+      const snap = await getDoc(adminRef);
+      return snap.exists();
+    }
+
     
     let currentAdminUID = null;
+    
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         currentAdminUID = null;
