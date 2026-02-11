@@ -339,15 +339,23 @@
 
 
 
+    // async function assertAdmin(uid) {
+    //   // checks: campaigns/global/admins/{uid} must exist
+    //   const adminRef = doc(db, "campaigns", "global", "admins", uid);
+    //   const snap = await getDoc(adminRef);
+    //   return snap.exists();
+    // }
     async function assertAdmin(uid) {
-      // checks: campaigns/global/admins/{uid} must exist
-      const adminRef = doc(db, "campaigns", "global", "admins", uid);
-      const snap = await getDoc(adminRef);
-      return snap.exists();
+      const ref = doc(db, "campaigns", "global", "admins", uid);
+      const snap = await getDoc(ref);
+      return snap.exists() && snap.data()?.role === "admin";
     }
+
 
     
     let currentAdminUID = null;
+
+    
     
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
