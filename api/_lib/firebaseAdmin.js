@@ -1,10 +1,10 @@
+// api/_lib/firebaseAdmin.js
 import admin from "firebase-admin";
 
 function getServiceAccount() {
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
   if (!raw) throw new Error("Missing FIREBASE_SERVICE_ACCOUNT env var");
 
-  // If you stored it as JSON text in Vercel, parse it
   const sa = JSON.parse(raw);
 
   // Fix private_key newlines if needed
@@ -34,4 +34,3 @@ export function getAdmin() {
   getAdminApp();
   return admin;
 }
-
