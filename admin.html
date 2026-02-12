@@ -434,6 +434,46 @@
 
     // Firestore refs
     const campaignDocRef = doc(db, "campaigns", "global");
+    //Save goal
+    const goalMajorInput = document.getElementById("goalMajorInput");
+    const saveGoalBtn = document.getElementById("saveGoalBtn");
+    const goalMsg = document.getElementById("goalMsg");
+  
+
+    function showGoalMsg(msg, success = true) {
+      goalMsg.textContent = msg;
+      goalMsg.style.color = success ? "#6ee7b7" : "#fca5a5";
+    }
+
+    saveGoalBtn.addEventListener("click", async () => {
+      try {
+        const goalMajor = Number(goalMajorInput.value);
+    
+        if (!Number.isFinite(goalMajor) || goalMajor <= 0) {
+          return showGoalMsg("Enter a valid goal amount.", false);
+        }
+    
+        const goalMinor = Math.round(goalMajor * 100);
+    
+        await runTransaction(db, async (tx) => {
+          const snap = await tx.get(campaignDocRef);
+          if (!snap.exists()) throw new Error("Campaign not found");
+    
+          tx.update(campaignDocRef, {
+            goal: goalMinor,
+            updatedAt: serverTimestamp()
+          });
+        });
+    
+        showGoalMsg("Goal updated successfully ✅");
+    
+      } catch (err) {
+        console.error(err);
+        showGoalMsg("Failed to update goal. Check permissions.", false);
+      }
+    });
+
+    //Save donation
     const donationsColRef = collection(campaignDocRef, "donations");
 
     // state
