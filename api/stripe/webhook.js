@@ -1,4 +1,5 @@
 import { getAdminDb, getAdmin } from "../_lib/firebaseAdmin.js";
+import { sendBrevoEmailReceipt } from "../_lib/brevo.js";
 import Stripe from "stripe";
 
 export const config = { api: { bodyParser: false } };
@@ -12,9 +13,10 @@ async function buffer(readable) {
 }
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
 
-  // ✅ Stripe init (requires STRIPE_SECRET_KEY in Vercel env)
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const sig = req.headers["stripe-signature"];
   const buf = await buffer(req);
@@ -30,14 +32,16 @@ export default async function handler(req, res) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // ✅ Only handle successful payments
+  // Only handle successful checkout
   if (event.type !== "checkout.session.completed") {
     return res.json({ received: true });
   }
 
   const session = event.data.object;
 
-  // ---- Extract donation info ----
+  // ----------------------------
+  // Extract donation information
+  // ----------------------------
   const amountMinor = Number(session.amount_total || 0);
   const currency = String(session.currency || "ngn").toUpperCase();
 
@@ -52,24 +56,25 @@ export default async function handler(req, res) {
     null;
 
   const provider = "stripe";
-  const reference = session.id; // e.g. cs_test_...
+  const reference = session.id;
 
-  // ✅ Firebase Admin FieldValue
   const Admin = getAdmin();
   const FieldValue = Admin.firestore.FieldValue;
-
   const db = getAdminDb();
 
-  // ---- Firestore locations ----
   const campaignRef = db.doc("campaigns/global");
   const donationRef = campaignRef.collection("donations").doc(reference);
   const publicRef = db.collection("publicDonations").doc(reference);
 
   try {
+    // ----------------------------
+    // FIRESTORE TRANSACTION
+    // ----------------------------
     await db.runTransaction(async (tx) => {
-      // ✅ 1) READS FIRST
       const campSnap = await tx.get(campaignRef);
-      if (!campSnap.exists) throw new Error("Campaign doc not found");
+      if (!campSnap.exists) {
+        throw new Error("Campaign doc not found");
+      }
 
       const camp = campSnap.data() || {};
       const prevTotal = Number(camp.total || 0);
@@ -78,14 +83,14 @@ export default async function handler(req, res) {
       const newTotal = prevTotal + amountMinor;
       const newCount = prevCount + 1;
 
-      // ✅ 2) THEN WRITES
+      // Update campaign totals
       tx.update(campaignRef, {
         total: newTotal,
         count: newCount,
         updatedAt: FieldValue.serverTimestamp(),
       });
 
-      // Admin-only donation record
+      // Admin donation record
       tx.set(
         donationRef,
         {
@@ -101,7 +106,7 @@ export default async function handler(req, res) {
         { merge: true }
       );
 
-      // Public donation record (readable by homepage)
+      // Public donation record (homepage reads this)
       tx.set(
         publicRef,
         {
@@ -116,7 +121,35 @@ export default async function handler(req, res) {
       );
     });
 
+    // ----------------------------
+    // SEND BREVO EMAIL RECEIPT
+    // ----------------------------
+    if (email) {
+      try {
+        await sendBrevoEmailReceipt({
+          toEmail: email,
+          toName: name,
+          subject: "Donation Receipt — Life Gate Ministries",
+          html: `
+            <div style="font-family:Arial,sans-serif;line-height:1.6">
+              <h2>Thank you for your donation 🙏</h2>
+              <p><b>Name:</b> ${name}</p>
+              <p><b>Amount:</b> ${currency} ${(amountMinor / 100).toLocaleString()}</p>
+              <p><b>Reference:</b> ${reference}</p>
+              <p>Your generosity helps us transform lives.</p>
+              <br/>
+              <p>God bless you,<br/>Life Gate Ministries</p>
+            </div>
+          `,
+        });
+      } catch (emailErr) {
+        console.error("Brevo email failed:", emailErr);
+        // DO NOT fail webhook if email fails
+      }
+    }
+
     return res.json({ ok: true });
+
   } catch (err) {
     console.error("Firestore write failed:", err);
     return res.status(500).json({ error: err.message });
