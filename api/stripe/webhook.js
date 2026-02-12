@@ -5,20 +5,27 @@ export const config = { api: { bodyParser: false } };
 
 async function buffer(readable) {
   const chunks = [];
-  for await (const chunk of readable) chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  for await (const chunk of readable) {
+    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  }
   return Buffer.concat(chunks);
 }
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
+  // ✅ Stripe init (requires STRIPE_SECRET_KEY in Vercel env)
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const sig = req.headers["stripe-signature"];
   const buf = await buffer(req);
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(
+      buf,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
@@ -31,16 +38,25 @@ export default async function handler(req, res) {
   const session = event.data.object;
 
   // ---- Extract donation info ----
-  const amountMinor = session.amount_total || 0;
-  const currency = (session.currency || "ngn").toUpperCase();
+  const amountMinor = Number(session.amount_total || 0);
+  const currency = String(session.currency || "ngn").toUpperCase();
 
-  // You can put donor name/email in session.metadata when creating checkout session
-  const name = session.customer_details?.name || session.metadata?.name || "Anonymous";
-  const email = session.customer_details?.email || session.metadata?.email || null;
+  const name =
+    session.customer_details?.name ||
+    session.metadata?.name ||
+    "Anonymous";
+
+  const email =
+    session.customer_details?.email ||
+    session.metadata?.email ||
+    null;
 
   const provider = "stripe";
   const reference = session.id; // e.g. cs_test_...
-  const createdAt = getAdmin().firestore.FieldValue.serverTimestamp();
+
+  // ✅ Firebase Admin FieldValue
+  const Admin = getAdmin();
+  const FieldValue = Admin.firestore.FieldValue;
 
   const db = getAdminDb();
 
@@ -50,38 +66,54 @@ export default async function handler(req, res) {
   const publicRef = db.collection("publicDonations").doc(reference);
 
   try {
-   
     await db.runTransaction(async (tx) => {
       // ✅ 1) READS FIRST
       const campSnap = await tx.get(campaignRef);
       if (!campSnap.exists) throw new Error("Campaign doc not found");
-    
-      const camp = campSnap.data();
+
+      const camp = campSnap.data() || {};
       const prevTotal = Number(camp.total || 0);
       const prevCount = Number(camp.count || 0);
-    
-      // Prepare new values
+
       const newTotal = prevTotal + amountMinor;
       const newCount = prevCount + 1;
-    
+
       // ✅ 2) THEN WRITES
       tx.update(campaignRef, {
         total: newTotal,
         count: newCount,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       });
-    
-      const donationRef = campaignRef.collection("donations").doc(reference);
-      tx.set(donationRef, {
-        provider,
-        amountMinor,
-        currency,
-        name: name || "Anonymous",
-        email: email || null,
-        reference,
-        status: "success",
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      }, { merge: true });
+
+      // Admin-only donation record
+      tx.set(
+        donationRef,
+        {
+          provider,
+          amountMinor,
+          currency,
+          name,
+          email,
+          reference,
+          status: "success",
+          createdAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      // Public donation record (readable by homepage)
+      tx.set(
+        publicRef,
+        {
+          provider,
+          amountMinor,
+          currency,
+          name,
+          reference,
+          createdAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
     });
 
     return res.json({ ok: true });
@@ -90,4 +122,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: err.message });
   }
 }
-
