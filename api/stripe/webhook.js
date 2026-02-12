@@ -1,3 +1,4 @@
+// api/stripe/webhook.js
 import { getAdminDb, getAdmin } from "../_lib/firebaseAdmin.js";
 import { sendBrevoEmailReceipt } from "../_lib/brevo.js";
 import Stripe from "stripe";
@@ -13,21 +14,26 @@ async function buffer(readable) {
 }
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).send("Method Not Allowed");
+  if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return res.status(500).json({ error: "Missing STRIPE_SECRET_KEY" });
+  }
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    return res.status(500).json({ error: "Missing STRIPE_WEBHOOK_SECRET" });
   }
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-  const sig = req.headers["stripe-signature"];
+
+  // stripe-signature might be string or array depending on server
+  const sigHeader = req.headers["stripe-signature"];
+  const sig = Array.isArray(sigHeader) ? sigHeader[0] : sigHeader;
+
   const buf = await buffer(req);
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(
-      buf,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+    event = stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
@@ -39,24 +45,15 @@ export default async function handler(req, res) {
 
   const session = event.data.object;
 
-  // ----------------------------
   // Extract donation information
-  // ----------------------------
   const amountMinor = Number(session.amount_total || 0);
   const currency = String(session.currency || "ngn").toUpperCase();
 
-  const name =
-    session.customer_details?.name ||
-    session.metadata?.name ||
-    "Anonymous";
-
-  const email =
-    session.customer_details?.email ||
-    session.metadata?.email ||
-    null;
+  const name = session.customer_details?.name || session.metadata?.name || "Anonymous";
+  const email = session.customer_details?.email || session.metadata?.email || null;
 
   const provider = "stripe";
-  const reference = session.id;
+  const reference = session.id; // unique per checkout session
 
   const Admin = getAdmin();
   const FieldValue = Admin.firestore.FieldValue;
@@ -67,30 +64,29 @@ export default async function handler(req, res) {
   const publicRef = db.collection("publicDonations").doc(reference);
 
   try {
-    // ----------------------------
-    // FIRESTORE TRANSACTION
-    // ----------------------------
     await db.runTransaction(async (tx) => {
+      // ✅ 1) READS FIRST
       const campSnap = await tx.get(campaignRef);
-      if (!campSnap.exists) {
-        throw new Error("Campaign doc not found");
+      if (!campSnap.exists) throw new Error("Campaign doc not found");
+
+      // ✅ IMPORTANT: check if donation already processed (Stripe retries webhooks)
+      const existingDonationSnap = await tx.get(donationRef);
+      const alreadyProcessed = existingDonationSnap.exists;
+
+      // If already processed, do NOT add totals again.
+      if (!alreadyProcessed) {
+        const camp = campSnap.data() || {};
+        const prevTotal = Number(camp.total || 0);
+        const prevCount = Number(camp.count || 0);
+
+        tx.update(campaignRef, {
+          total: prevTotal + amountMinor,
+          count: prevCount + 1,
+          updatedAt: FieldValue.serverTimestamp(),
+        });
       }
 
-      const camp = campSnap.data() || {};
-      const prevTotal = Number(camp.total || 0);
-      const prevCount = Number(camp.count || 0);
-
-      const newTotal = prevTotal + amountMinor;
-      const newCount = prevCount + 1;
-
-      // Update campaign totals
-      tx.update(campaignRef, {
-        total: newTotal,
-        count: newCount,
-        updatedAt: FieldValue.serverTimestamp(),
-      });
-
-      // Admin donation record
+      // Always upsert donation docs (safe)
       tx.set(
         donationRef,
         {
@@ -106,7 +102,6 @@ export default async function handler(req, res) {
         { merge: true }
       );
 
-      // Public donation record (homepage reads this)
       tx.set(
         publicRef,
         {
@@ -121,9 +116,7 @@ export default async function handler(req, res) {
       );
     });
 
-    // ----------------------------
-    // SEND BREVO EMAIL RECEIPT
-    // ----------------------------
+    // Send email receipt (do NOT fail webhook if email fails)
     if (email) {
       try {
         await sendBrevoEmailReceipt({
@@ -144,14 +137,12 @@ export default async function handler(req, res) {
         });
       } catch (emailErr) {
         console.error("Brevo email failed:", emailErr);
-        // DO NOT fail webhook if email fails
       }
     }
 
     return res.json({ ok: true });
-
   } catch (err) {
-    console.error("Firestore write failed:", err);
+    console.error("Stripe webhook failed:", err);
     return res.status(500).json({ error: err.message });
   }
 }
