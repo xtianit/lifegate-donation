@@ -50,62 +50,7 @@ export default async function handler(req, res) {
   const publicRef = db.collection("publicDonations").doc(reference);
 
   try {
-    // await db.runTransaction(async (tx) => {
-    //   const campSnap = await tx.get(campaignRef);
-    //   const camp = campSnap.exists ? campSnap.data() : {};
-
-    //   const total = Number(camp.total || 0);
-    //   const count = Number(camp.count || 0);
-
-    //   // ✅ Upsert private donation
-    //   tx.set(
-    //     donationRef,
-    //     {
-    //       name,
-    //       email,
-    //       amountMinor,
-    //       currency,
-    //       provider,
-    //       reference,
-    //       createdAt,
-    //     },
-    //     { merge: true }
-    //   );
-
-    //   // ✅ Upsert public donation (no email)
-    //   tx.set(
-    //     publicRef,
-    //     {
-    //       name,
-    //       amountMinor,
-    //       currency,
-    //       provider,
-    //       referenceShort: String(reference).slice(0, 18),
-    //       createdAt,
-    //     },
-    //     { merge: true }
-    //   );
-
-    //   // ✅ Update campaign totals
-    //   // If donation already existed, don’t double-count.
-    //   // We check if private donation existed before:
-    //   const oldDonSnap = await tx.get(donationRef);
-    //   const existed = oldDonSnap.exists;
-
-    //   if (!existed) {
-    //     tx.set(
-    //       campaignRef,
-    //       {
-    //         total: total + amountMinor,
-    //         count: count + 1,
-    //         updatedAt: createdAt,
-    //       },
-    //       { merge: true }
-    //     );
-    //   } else {
-    //     tx.set(campaignRef, { updatedAt: createdAt }, { merge: true });
-    //   }
-    // });
+   
     await db.runTransaction(async (tx) => {
       // ✅ 1) READS FIRST
       const campSnap = await tx.get(campaignRef);
