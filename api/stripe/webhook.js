@@ -4,6 +4,7 @@ import { sendBrevoEmailReceipt, buildDonationReceiptHtml } from "../_lib/brevo.j
 import Stripe from "stripe";
 import crypto from "crypto";
 
+
 export const config = { api: { bodyParser: false } };
 
 function makeReceiptToken() {
@@ -128,6 +129,7 @@ export default async function handler(req, res) {
           name,
           email,
           reference,
+          receiptToken,
           status: "success",
           createdAt: FieldValue.serverTimestamp(),
         },
@@ -149,19 +151,25 @@ export default async function handler(req, res) {
     });
 
     // Send email receipt (do NOT fail webhook if email fails)
-    if (email) {
+   if (email) {
       try {
         const amountText = `${currency} ${(amountMinor / 100).toLocaleString()}`;
-
+    
         const html = buildDonationReceiptHtml({
           name,
           amountText,
           reference,
           provider,
-          dateText,
+          dateText: new Date().toLocaleString(),
           campaignTitle: "Life Gate Ministries Campaign",
-        });
-
+        }) + (downloadUrl ? `
+          <div style="max-width:640px;margin:14px auto 0 auto;font-family:Arial,sans-serif;">
+            <a href="${downloadUrl}" style="display:inline-block;padding:12px 16px;border-radius:10px;background:#1a472a;color:#fff;text-decoration:none;font-weight:700;">
+              Download PDF Receipt
+            </a>
+          </div>
+        ` : "");
+    
         await sendBrevoEmailReceipt({
           toEmail: email,
           toName: name,
