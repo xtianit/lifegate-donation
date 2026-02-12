@@ -188,6 +188,10 @@
             Save Goal
           </button>
         </div>
+
+        <div class="muted" style="margin-top:10px;">
+          Current Goal: ₦<span id="currentGoalDisplay">0</span>
+        </div>
       
         <div id="goalMsg" style="margin-top:10px;"></div>
       </div>
@@ -498,6 +502,13 @@
         const total = (data.total || 0) / 100;
         const count = data.count || 0;
         const goal = (data.goal || 0) / 100;
+
+        const goalEl = document.getElementById("currentGoalDisplay");
+        if (goalEl) goalEl.textContent = goal.toLocaleString();
+
+        const input = document.getElementById("goalMajorInput");
+        if (input && !input.value) input.value = goal;
+        
         const avg = count > 0 ? total / count : 0;
         const progress = goal > 0 ? Math.min((total / goal) * 100, 100) : 0;
 
