@@ -4,6 +4,12 @@ import { sendBrevoEmailReceipt, buildDonationReceiptHtml } from "../_lib/brevo.j
 import Stripe from "stripe";
 import crypto from "crypto";
 
+function getBaseUrl(req) {
+  const proto = req.headers["x-forwarded-proto"] || "https";
+  const host = req.headers["x-forwarded-host"] || req.headers.host;
+  return `${proto}://${host}`;
+}
+
 
 export const config = { api: { bodyParser: false } };
 
@@ -73,10 +79,12 @@ export default async function handler(req, res) {
   const reference = session.id; // unique per checkout session
   
   const receiptToken = makeReceiptToken();
-  const baseUrl = process.env.PUBLIC_BASE_URL || "";
-  const downloadUrl = baseUrl
-    ? `${baseUrl}/api/receipt?ref=${encodeURIComponent(reference)}&t=${encodeURIComponent(receiptToken)}`
-    : null;
+
+  const baseUrl = process.env.PUBLIC_BASE_URL || getBaseUrl(req);
+
+  const downloadUrl =
+    `${baseUrl}/api/receipt?ref=${encodeURIComponent(reference)}&t=${encodeURIComponent(receiptToken)}`;
+
 
 
   const Admin = getAdmin();
@@ -151,39 +159,43 @@ export default async function handler(req, res) {
     });
 
     // Send email receipt (do NOT fail webhook if email fails)
-   if (email) {
-      try {
-        const amountText = `${currency} ${(amountMinor / 100).toLocaleString()}`;
-    
-        const html = buildDonationReceiptHtml({
-          name,
-          amountText,
-          reference,
-          provider,
-          dateText: new Date().toLocaleString(),
-          campaignTitle: "Life Gate Ministries Campaign",
-        }) + (downloadUrl ? `
-          <div style="max-width:640px;margin:14px auto 0 auto;font-family:Arial,sans-serif;">
-            <a href="${downloadUrl}" style="display:inline-block;padding:12px 16px;border-radius:10px;background:#1a472a;color:#fff;text-decoration:none;font-weight:700;">
-              Download PDF Receipt
-            </a>
-          </div>
-        ` : "");
-    
-        await sendBrevoEmailReceipt({
-          toEmail: email,
-          toName: name,
-          subject: "Donation Receipt — Life Gate Ministries",
-          html,
-        });
-      } catch (emailErr) {
-        console.error("Brevo email failed:", emailErr);
-      }
-    }
+  // Send email receipt (do NOT fail webhook if email fails)
+if (email) {
+  try {
+    const amountText = `${currency} ${(amountMinor / 100).toLocaleString()}`;
 
-    return res.json({ ok: true });
-  } catch (err) {
-    console.error("Stripe webhook failed:", err);
-    return res.status(500).json({ error: err.message });
+    const html = `
+      ${buildDonationReceiptHtml({
+        name,
+        amountText,
+        reference,
+        provider,
+        dateText,
+        campaignTitle: "Life Gate Ministries Campaign",
+      })}
+
+      <div style="max-width:640px;margin:14px auto 0 auto;font-family:Arial,sans-serif;">
+        <a href="${downloadUrl}" 
+           style="display:inline-block;padding:12px 16px;border-radius:10px;background:#1a472a;color:#fff;text-decoration:none;font-weight:700;">
+          Download PDF Receipt
+        </a>
+
+        <p style="margin-top:12px;color:#333;font-size:13px;">
+          If the button doesn’t work, copy this link:
+          <br />
+          <a href="${downloadUrl}">${downloadUrl}</a>
+        </p>
+      </div>
+    `;
+
+    await sendBrevoEmailReceipt({
+      toEmail: email,
+      toName: name,
+      subject: "Donation Receipt — Life Gate Ministries",
+      html,
+    });
+
+  } catch (emailErr) {
+    console.error("Brevo email failed:", emailErr);
   }
 }
