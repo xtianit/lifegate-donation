@@ -1,6 +1,6 @@
 // api/stripe/webhook.js
 import { getAdminDb, getAdmin } from "../_lib/firebaseAdmin.js";
-import { sendBrevoEmailReceipt } from "../_lib/brevo.js";
+import { sendBrevoEmailReceipt, buildDonationReceiptHtml } from "../_lib/brevo.js";
 import Stripe from "stripe";
 
 export const config = { api: { bodyParser: false } };
@@ -33,7 +33,11 @@ export default async function handler(req, res) {
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(
+      buf,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
@@ -49,8 +53,15 @@ export default async function handler(req, res) {
   const amountMinor = Number(session.amount_total || 0);
   const currency = String(session.currency || "ngn").toUpperCase();
 
-  const name = session.customer_details?.name || session.metadata?.name || "Anonymous";
-  const email = session.customer_details?.email || session.metadata?.email || null;
+  const name =
+    session.customer_details?.name ||
+    session.metadata?.name ||
+    "Anonymous";
+
+  const email =
+    session.customer_details?.email ||
+    session.metadata?.email ||
+    null;
 
   const provider = "stripe";
   const reference = session.id; // unique per checkout session
@@ -62,6 +73,15 @@ export default async function handler(req, res) {
   const campaignRef = db.doc("campaigns/global");
   const donationRef = campaignRef.collection("donations").doc(reference);
   const publicRef = db.collection("publicDonations").doc(reference);
+
+  // Optional: nicer date text for receipt (server time)
+  const dateText = new Date().toLocaleString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   try {
     await db.runTransaction(async (tx) => {
@@ -119,21 +139,22 @@ export default async function handler(req, res) {
     // Send email receipt (do NOT fail webhook if email fails)
     if (email) {
       try {
+        const amountText = `${currency} ${(amountMinor / 100).toLocaleString()}`;
+
+        const html = buildDonationReceiptHtml({
+          name,
+          amountText,
+          reference,
+          provider,
+          dateText,
+          campaignTitle: "Life Gate Ministries Campaign",
+        });
+
         await sendBrevoEmailReceipt({
           toEmail: email,
           toName: name,
           subject: "Donation Receipt — Life Gate Ministries",
-          html: `
-            <div style="font-family:Arial,sans-serif;line-height:1.6">
-              <h2>Thank you for your donation 🙏</h2>
-              <p><b>Name:</b> ${name}</p>
-              <p><b>Amount:</b> ${currency} ${(amountMinor / 100).toLocaleString()}</p>
-              <p><b>Reference:</b> ${reference}</p>
-              <p>Your generosity helps us transform lives.</p>
-              <br/>
-              <p>God bless you,<br/>Life Gate Ministries</p>
-            </div>
-          `,
+          html,
         });
       } catch (emailErr) {
         console.error("Brevo email failed:", emailErr);
