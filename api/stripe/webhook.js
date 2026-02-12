@@ -2,8 +2,13 @@
 import { getAdminDb, getAdmin } from "../_lib/firebaseAdmin.js";
 import { sendBrevoEmailReceipt, buildDonationReceiptHtml } from "../_lib/brevo.js";
 import Stripe from "stripe";
+import crypto from "crypto";
 
 export const config = { api: { bodyParser: false } };
+
+function makeReceiptToken() {
+  return crypto.randomBytes(24).toString("hex"); // 48 chars
+}
 
 async function buffer(readable) {
   const chunks = [];
@@ -65,6 +70,13 @@ export default async function handler(req, res) {
 
   const provider = "stripe";
   const reference = session.id; // unique per checkout session
+  
+  const receiptToken = makeReceiptToken();
+  const baseUrl = process.env.PUBLIC_BASE_URL || "";
+  const downloadUrl = baseUrl
+    ? `${baseUrl}/api/receipt?ref=${encodeURIComponent(reference)}&t=${encodeURIComponent(receiptToken)}`
+    : null;
+
 
   const Admin = getAdmin();
   const FieldValue = Admin.firestore.FieldValue;
