@@ -57,18 +57,36 @@ export default async function handler(req, res) {
 
   // ✅ IMPORTANT: read the SAME keys you set in /api/stripe/start
   const meta = session.metadata || {};
-  const name =
-    session.customer_details?.name ||
-    meta.donor_name ||
-    meta.name ||
-    "Anonymous";
+  // const name =
+  //   session.customer_details?.name ||
+  //   meta.donor_name ||
+  //   meta.name ||
+  //   "Anonymous";
 
-  const email =
-    session.customer_details?.email ||
-    session.customer_email ||
-    meta.donor_email ||
-    meta.email ||
-    null;
+  // const email =
+  //   session.customer_details?.email ||
+  //   session.customer_email ||
+  //   meta.donor_email ||
+  //   meta.email ||
+  //   null;
+// const meta = session.metadata || {};
+
+// ✅ Prefer what YOU sent from the donation form (metadata)
+// because Stripe may reuse saved customer name for that email.
+const name =
+  meta.donor_name ||
+  meta.name ||
+  session.customer_details?.name ||
+  "Anonymous";
+
+const email =
+  meta.donor_email ||
+  meta.email ||
+  session.customer_details?.email ||
+  session.customer_email ||
+  null;
+
+  
 
   const Admin = getAdmin();
   const FieldValue = Admin.firestore.FieldValue;
