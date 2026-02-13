@@ -176,11 +176,17 @@ app.post("/api/stripe/start", async (req, res) => {
       //New paste
       //ENd of new paster
       
+      // metadata: {
+      //   donor_name: name || "Anonymous",
+      //   donor_email: email || "",
+      // },
+      // customer_email: email,
       metadata: {
-        donor_name: name || "Anonymous",
-        donor_email: email || "",
+        donor_name: String(name || "Anonymous"),
+        donor_email: String(email || ""),
       },
       customer_email: email,
+
 
       
       success_url: `${FRONTEND_URL}/index.html?success=1&provider=stripe`,
@@ -243,14 +249,32 @@ app.post("/api/stripe/webhook", bodyParser.raw({ type: "application/json" }), as
       //   email: session.customer_email || session.metadata?.donor_email,
       //   reference: session.id,
       // });
+      // await recordDonation({
+      //   provider: "stripe",
+      //   amountMinor: Number(session.amount_total || 0),
+      //   currency: String(session.currency || "usd").toUpperCase(),
+      //   name: session.metadata?.donor_name || session.customer_details?.name || "Anonymous",
+      //   email: session.customer_email || session.metadata?.donor_email || session.customer_details?.email || null,
+      //   reference: session.id,
+      // });
       await recordDonation({
         provider: "stripe",
         amountMinor: Number(session.amount_total || 0),
         currency: String(session.currency || "usd").toUpperCase(),
+      
+        // ✅ use YOUR form name first
         name: session.metadata?.donor_name || session.customer_details?.name || "Anonymous",
-        email: session.customer_email || session.metadata?.donor_email || session.customer_details?.email || null,
+      
+        // ✅ use YOUR form email first
+        email:
+          session.metadata?.donor_email ||
+          session.customer_email ||
+          session.customer_details?.email ||
+          null,
+      
         reference: session.id,
       });
+
 
     }
 
