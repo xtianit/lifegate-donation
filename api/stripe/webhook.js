@@ -68,8 +68,7 @@ export default async function handler(req, res) {
 
     const receiptToken = makeReceiptToken();
 
-    const baseUrl = process.env.PUBLIC_BASE_URL || getBaseUrl(req);
-    const downloadUrl = `${baseUrl}/api/receipt?ref=${encodeURIComponent(reference)}&t=${encodeURIComponent(receiptToken)}`;
+   
 
     const Admin = getAdmin();
     const FieldValue = Admin.firestore.FieldValue;
@@ -156,6 +155,7 @@ export default async function handler(req, res) {
     const baseUrl = process.env.PUBLIC_BASE_URL || getBaseUrl(req);
     const downloadUrl =
       `${baseUrl}/api/receipt?ref=${encodeURIComponent(reference)}&t=${encodeURIComponent(tokenToUse)}`;
+
 
 
 
