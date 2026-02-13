@@ -87,30 +87,41 @@ export default async function handler(req, res) {
       minute: "2-digit",
     });
 
+
+    //-----------------------------
+    //Receipt token generator
+    //==============================
+    // ---- before transaction ----
+    let tokenToUse = null;
+    
     // ----------------------------
     // Firestore transaction
     // ----------------------------
     await db.runTransaction(async (tx) => {
       const campSnap = await tx.get(campaignRef);
       if (!campSnap.exists) throw new Error("Campaign doc not found");
-
-      // prevent double-counting (Stripe retries webhooks)
+    
       const existingDonationSnap = await tx.get(donationRef);
       const alreadyProcessed = existingDonationSnap.exists;
-
+    
+      // ✅ Token handling (reuse if already exists)
+      const existingData = existingDonationSnap.exists ? (existingDonationSnap.data() || {}) : {};
+      tokenToUse = existingData.receiptToken || makeReceiptToken();
+    
+      // Only add totals once
       if (!alreadyProcessed) {
         const camp = campSnap.data() || {};
         const prevTotal = Number(camp.total || 0);
         const prevCount = Number(camp.count || 0);
-
+    
         tx.update(campaignRef, {
           total: prevTotal + amountMinor,
           count: prevCount + 1,
           updatedAt: FieldValue.serverTimestamp(),
         });
       }
-
-      // Admin-only record (private)
+    
+      // Always upsert donation docs (safe)
       tx.set(
         donationRef,
         {
@@ -120,14 +131,13 @@ export default async function handler(req, res) {
           name,
           email,
           reference,
-          receiptToken,
+          receiptToken: tokenToUse, // ✅ stable token
           status: "success",
           createdAt: FieldValue.serverTimestamp(),
         },
         { merge: true }
       );
-
-      // Public record (homepage reads this)
+    
       tx.set(
         publicRef,
         {
@@ -141,6 +151,20 @@ export default async function handler(req, res) {
         { merge: true }
       );
     });
+    
+    // ✅ build download url AFTER transaction so tokenToUse is correct
+    const baseUrl = process.env.PUBLIC_BASE_URL || getBaseUrl(req);
+    const downloadUrl =
+      `${baseUrl}/api/receipt?ref=${encodeURIComponent(reference)}&t=${encodeURIComponent(tokenToUse)}`;
+
+
+
+
+
+
+
+
+    
 
     // ----------------------------
     // Email receipt via Brevo
