@@ -160,26 +160,26 @@ export default async function handler(req, res) {
 
     // Send email receipt (do NOT fail webhook if email fails)
   // Send email receipt (do NOT fail webhook if email fails)
+// Send email receipt (do NOT fail webhook if email fails)
 if (email) {
   try {
     const amountText = `${currency} ${(amountMinor / 100).toLocaleString()}`;
 
-    const html = `
-      ${buildDonationReceiptHtml({
-        name,
-        amountText,
-        reference,
-        provider,
-        dateText,
-        campaignTitle: "Life Gate Ministries Campaign",
-      })}
+    const receiptHtml = buildDonationReceiptHtml({
+      name,
+      amountText,
+      reference,
+      provider,
+      dateText,
+      campaignTitle: "Life Gate Ministries Campaign",
+    });
 
+    const html = `
+      ${receiptHtml}
       <div style="max-width:640px;margin:14px auto 0 auto;font-family:Arial,sans-serif;">
-        <a href="${downloadUrl}" 
-           style="display:inline-block;padding:12px 16px;border-radius:10px;background:#1a472a;color:#fff;text-decoration:none;font-weight:700;">
+        <a href="${downloadUrl}" style="display:inline-block;padding:12px 16px;border-radius:10px;background:#1a472a;color:#fff;text-decoration:none;font-weight:700;">
           Download PDF Receipt
         </a>
-
         <p style="margin-top:12px;color:#333;font-size:13px;">
           If the button doesn’t work, copy this link:
           <br />
