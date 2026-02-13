@@ -182,9 +182,15 @@ app.post("/api/stripe/start", async (req, res) => {
       // },
       // customer_email: email,
       metadata: {
-        donor_name: String(name || "Anonymous"),
-        donor_email: String(email || ""),
+        // keep your old keys
+        donor_name: name || "Anonymous",
+        donor_email: email || "",
+      
+        // ALSO add these keys (so webhook can read either)
+        name: name || "Anonymous",
+        email: email || "",
       },
+
       customer_email: email,
 
 
