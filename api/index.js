@@ -172,11 +172,17 @@ app.post("/api/stripe/start", async (req, res) => {
           quantity: 1,
         },
       ],
+
+      //New paste
+      //ENd of new paster
+      
       metadata: {
         donor_name: name || "Anonymous",
         donor_email: email || "",
       },
       customer_email: email,
+
+      
       success_url: `${FRONTEND_URL}/index.html?success=1&provider=stripe`,
       cancel_url: `${FRONTEND_URL}/index.html?cancel=1`,
     });
@@ -229,14 +235,23 @@ app.post("/api/stripe/webhook", bodyParser.raw({ type: "application/json" }), as
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
+      // await recordDonation({
+      //   provider: "stripe",
+      //   amountMinor: session.amount_total,
+      //   currency: session.currency?.toUpperCase(),
+      //   name: session.metadata?.donor_name,
+      //   email: session.customer_email || session.metadata?.donor_email,
+      //   reference: session.id,
+      // });
       await recordDonation({
         provider: "stripe",
-        amountMinor: session.amount_total,
-        currency: session.currency?.toUpperCase(),
-        name: session.metadata?.donor_name,
-        email: session.customer_email || session.metadata?.donor_email,
+        amountMinor: Number(session.amount_total || 0),
+        currency: String(session.currency || "usd").toUpperCase(),
+        name: session.metadata?.donor_name || session.customer_details?.name || "Anonymous",
+        email: session.customer_email || session.metadata?.donor_email || session.customer_details?.email || null,
         reference: session.id,
       });
+
     }
 
     res.json({ received: true });
