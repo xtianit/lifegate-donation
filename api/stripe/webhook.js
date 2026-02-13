@@ -4,17 +4,16 @@ import { sendBrevoEmailReceipt, buildDonationReceiptHtml } from "../_lib/brevo.j
 import Stripe from "stripe";
 import crypto from "crypto";
 
+export const config = { api: { bodyParser: false } };
+
 function getBaseUrl(req) {
   const proto = req.headers["x-forwarded-proto"] || "https";
   const host = req.headers["x-forwarded-host"] || req.headers.host;
   return `${proto}://${host}`;
 }
 
-
-export const config = { api: { bodyParser: false } };
-
 function makeReceiptToken() {
-  return crypto.randomBytes(24).toString("hex"); // 48 chars
+  return crypto.randomBytes(24).toString("hex");
 }
 
 async function buffer(readable) {
@@ -26,95 +25,79 @@ async function buffer(readable) {
 }
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
-
-  if (!process.env.STRIPE_SECRET_KEY) {
-    return res.status(500).json({ error: "Missing STRIPE_SECRET_KEY" });
-  }
-  if (!process.env.STRIPE_WEBHOOK_SECRET) {
-    return res.status(500).json({ error: "Missing STRIPE_WEBHOOK_SECRET" });
-  }
-
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-  // stripe-signature might be string or array depending on server
-  const sigHeader = req.headers["stripe-signature"];
-  const sig = Array.isArray(sigHeader) ? sigHeader[0] : sigHeader;
-
-  const buf = await buffer(req);
-
-  let event;
   try {
-    event = stripe.webhooks.constructEvent(
-      buf,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
+    if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
-  // Only handle successful checkout
-  if (event.type !== "checkout.session.completed") {
-    return res.json({ received: true });
-  }
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return res.status(500).json({ error: "Missing STRIPE_SECRET_KEY" });
+    }
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+      return res.status(500).json({ error: "Missing STRIPE_WEBHOOK_SECRET" });
+    }
 
-  const session = event.data.object;
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-  // Extract donation information
-  const amountMinor = Number(session.amount_total || 0);
-  const currency = String(session.currency || "ngn").toUpperCase();
+    const sigHeader = req.headers["stripe-signature"];
+    const sig = Array.isArray(sigHeader) ? sigHeader[0] : sigHeader;
 
-  const name =
-    session.customer_details?.name ||
-    session.metadata?.name ||
-    "Anonymous";
+    const buf = await buffer(req);
 
-  const email =
-    session.customer_details?.email ||
-    session.metadata?.email ||
-    null;
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    } catch (err) {
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
 
-  const provider = "stripe";
-  const reference = session.id; // unique per checkout session
-  
-  const receiptToken = makeReceiptToken();
+    // Only handle successful checkout
+    if (event.type !== "checkout.session.completed") {
+      return res.json({ received: true });
+    }
 
-  const baseUrl = process.env.PUBLIC_BASE_URL || getBaseUrl(req);
+    const session = event.data.object;
 
-  const downloadUrl =
-    `${baseUrl}/api/receipt?ref=${encodeURIComponent(reference)}&t=${encodeURIComponent(receiptToken)}`;
+    // Extract donation information
+    const amountMinor = Number(session.amount_total || 0);
+    const currency = String(session.currency || "ngn").toUpperCase();
 
+    const name = session.customer_details?.name || session.metadata?.name || "Anonymous";
+    const email = session.customer_details?.email || session.metadata?.email || null;
 
+    const provider = "stripe";
+    const reference = session.id;
 
-  const Admin = getAdmin();
-  const FieldValue = Admin.firestore.FieldValue;
-  const db = getAdminDb();
+    const receiptToken = makeReceiptToken();
 
-  const campaignRef = db.doc("campaigns/global");
-  const donationRef = campaignRef.collection("donations").doc(reference);
-  const publicRef = db.collection("publicDonations").doc(reference);
+    const baseUrl = process.env.PUBLIC_BASE_URL || getBaseUrl(req);
+    const downloadUrl = `${baseUrl}/api/receipt?ref=${encodeURIComponent(reference)}&t=${encodeURIComponent(receiptToken)}`;
 
-  // Optional: nicer date text for receipt (server time)
-  const dateText = new Date().toLocaleString("en-GB", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+    const Admin = getAdmin();
+    const FieldValue = Admin.firestore.FieldValue;
+    const db = getAdminDb();
 
-  try {
+    const campaignRef = db.doc("campaigns/global");
+    const donationRef = campaignRef.collection("donations").doc(reference);
+    const publicRef = db.collection("publicDonations").doc(reference);
+
+    const dateText = new Date().toLocaleString("en-GB", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    // ----------------------------
+    // Firestore transaction
+    // ----------------------------
     await db.runTransaction(async (tx) => {
-      // ✅ 1) READS FIRST
       const campSnap = await tx.get(campaignRef);
       if (!campSnap.exists) throw new Error("Campaign doc not found");
 
-      // ✅ IMPORTANT: check if donation already processed (Stripe retries webhooks)
+      // prevent double-counting (Stripe retries webhooks)
       const existingDonationSnap = await tx.get(donationRef);
       const alreadyProcessed = existingDonationSnap.exists;
 
-      // If already processed, do NOT add totals again.
       if (!alreadyProcessed) {
         const camp = campSnap.data() || {};
         const prevTotal = Number(camp.total || 0);
@@ -127,7 +110,7 @@ export default async function handler(req, res) {
         });
       }
 
-      // Always upsert donation docs (safe)
+      // Admin-only record (private)
       tx.set(
         donationRef,
         {
@@ -144,6 +127,7 @@ export default async function handler(req, res) {
         { merge: true }
       );
 
+      // Public record (homepage reads this)
       tx.set(
         publicRef,
         {
@@ -158,44 +142,50 @@ export default async function handler(req, res) {
       );
     });
 
-    // Send email receipt (do NOT fail webhook if email fails)
-  // Send email receipt (do NOT fail webhook if email fails)
-// Send email receipt (do NOT fail webhook if email fails)
-if (email) {
-  try {
-    const amountText = `${currency} ${(amountMinor / 100).toLocaleString()}`;
+    // ----------------------------
+    // Email receipt via Brevo
+    // ----------------------------
+    if (email) {
+      const amountText = `${currency} ${(amountMinor / 100).toLocaleString()}`;
 
-    const receiptHtml = buildDonationReceiptHtml({
-      name,
-      amountText,
-      reference,
-      provider,
-      dateText,
-      campaignTitle: "Life Gate Ministries Campaign",
-    });
+      const html =
+        buildDonationReceiptHtml({
+          name,
+          amountText,
+          reference,
+          provider,
+          dateText,
+          campaignTitle: "Life Gate Ministries Campaign",
+        }) +
+        `
+        <div style="max-width:640px;margin:14px auto 0 auto;font-family:Arial,sans-serif;">
+          <a href="${downloadUrl}" style="display:inline-block;padding:12px 16px;border-radius:10px;background:#1a472a;color:#fff;text-decoration:none;font-weight:700;">
+            Download PDF Receipt
+          </a>
 
-    const html = `
-      ${receiptHtml}
-      <div style="max-width:640px;margin:14px auto 0 auto;font-family:Arial,sans-serif;">
-        <a href="${downloadUrl}" style="display:inline-block;padding:12px 16px;border-radius:10px;background:#1a472a;color:#fff;text-decoration:none;font-weight:700;">
-          Download PDF Receipt
-        </a>
-        <p style="margin-top:12px;color:#333;font-size:13px;">
-          If the button doesn’t work, copy this link:
-          <br />
-          <a href="${downloadUrl}">${downloadUrl}</a>
-        </p>
-      </div>
-    `;
+          <p style="margin-top:12px;color:#333;font-size:13px;">
+            If the button doesn’t work, copy this link:
+            <br />
+            <a href="${downloadUrl}">${downloadUrl}</a>
+          </p>
+        </div>
+      `;
 
-    await sendBrevoEmailReceipt({
-      toEmail: email,
-      toName: name,
-      subject: "Donation Receipt — Life Gate Ministries",
-      html,
-    });
+      try {
+        await sendBrevoEmailReceipt({
+          toEmail: email,
+          toName: name,
+          subject: "Donation Receipt — Life Gate Ministries",
+          html,
+        });
+      } catch (emailErr) {
+        console.error("Brevo email failed:", emailErr);
+      }
+    }
 
-  } catch (emailErr) {
-    console.error("Brevo email failed:", emailErr);
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("Stripe webhook failed:", err);
+    return res.status(500).json({ error: err.message });
   }
 }
